@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Salam · Informations légales</title>
+<meta name="description" content="Politique de confidentialité et conditions d’utilisation du site de démonstration Salam.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#131209">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:"Geist";src:url("fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url("fonts/GeistMono-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+:root{color-scheme:dark;--bg:#131209;--surface:#1F1F1F;--text:#F2EDE4;--muted:#A7A196;--faint:#8A857B;--accent:#E7C08F;--ink:#131209;--line:rgba(242,237,228,.08);--ease:cubic-bezier(.32,.72,0,1);--font:"Geist",ui-sans-serif,system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:32px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:1rem;line-height:1.5rem;-webkit-font-smoothing:antialiased}
+h1,h2,p,ul{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.skip{position:fixed;left:16px;top:16px;padding:8px 12px;border-radius:8px;background:var(--accent);color:var(--ink);font-weight:600;font-size:.875rem;line-height:1.25rem;text-decoration:none;transform:translateY(-200%);transition:transform 400ms var(--ease)}
+.skip:focus{transform:none}
+.wrap{max-width:680px;margin-inline:auto;padding:64px 24px 96px}
+@media (max-width:479px){.wrap{padding-inline:16px}}
+.back{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:9999px;border:1px solid rgba(242,237,228,.14);font-size:.875rem;line-height:1.25rem;font-weight:600;text-decoration:none;transition:background-color 400ms var(--ease),transform 400ms var(--ease)}
+.back:hover{background:rgba(242,237,228,.06)}
+.back:active{transform:scale(.98)}
+.back svg{width:16px;height:16px;fill:currentColor}
+h1{margin-top:48px;font-size:2.25rem;line-height:2.5rem;font-weight:600;letter-spacing:-.02em;text-wrap:balance}
+.note{margin-top:16px;color:var(--muted);text-wrap:pretty}
+section{display:grid;gap:16px;margin-top:48px;padding:32px;border-radius:24px;border:1px solid var(--line);background:var(--surface)}
+@media (max-width:479px){section{padding:24px}}
+h2{font-size:1.5rem;line-height:2rem;font-weight:600;letter-spacing:-.01em}
+section p,section li{color:var(--muted);text-wrap:pretty}
+section ul{display:grid;gap:8px;padding-left:24px}
+.label{font-family:var(--mono);font-size:.75rem;line-height:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.select{user-select:all;color:var(--text)}
+</style>
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+<main class="wrap" id="contenu" tabindex="-1">
+  <a class="back" href="index.html"><svg viewBox="0 0 256 256" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/></svg>Retour à l’accueil</a>
+  <h1>Informations légales</h1>
+  <p class="note">Ce site est une démonstration. Salam est une marque fictive et les textes suivants servent d’exemple de mise en page.</p>
+
+  <section id="confidentialite" aria-labelledby="confidentialite-title">
+    <p class="label">Mis à jour le 25 septembre 2026</p>
+    <h2 id="confidentialite-title">Politique de confidentialité</h2>
+    <p>Ce site ne dépose aucun cookie et ne mesure pas l’audience. Les formulaires d’inscription sont simulés dans votre navigateur&#8239;: l’adresse saisie n’est ni envoyée ni enregistrée.</p>
+    <p>Les polices de caractères sont hébergées sur ce site. Aucune ressource n’est chargée depuis un service tiers.</p>
+    <ul>
+      <li>Données collectées&#8239;: aucune</li>
+      <li>Cookies&#8239;: aucun, donc pas de bandeau de consentement</li>
+      <li>Contact&#8239;: <span class="select">bonjour@salam.example</span></li>
+    </ul>
+  </section>
+
+  <section id="conditions" aria-labelledby="conditions-title">
+    <p class="label">Mis à jour le 25 septembre 2026</p>
+    <h2 id="conditions-title">Conditions d’utilisation</h2>
+    <p>Ce site présente un produit imaginaire. Les chiffres, témoignages, entreprises et personnes cités sont inventés pour l’exemple, à l’exception de la durée de reprise après une interruption, issue des travaux de Gloria Mark.</p>
+    <p>Aucun abonnement ne peut être souscrit ici et aucun paiement n’est demandé.</p>
+  </section>
+</main>
+</body>
+</html>

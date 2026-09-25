@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Salam · Deux heures de calme par jour</title>
+<meta name="description" content="Salam retient vos notifications Slack, Teams et Gmail pendant vos plages de travail et vous les livre en un seul résumé. Site de démonstration.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#131209">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Salam · Deux heures de calme par jour">
+<meta property="og:description" content="Vos notifications regroupées en un seul résumé. Les vraies urgences passent toujours.">
+<meta property="og:image" content="og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<script>document.documentElement.classList.add('js')</script>
+<style>
+@font-face{font-family:"Geist";src:url("fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url("fonts/GeistMono-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+:root{
+  color-scheme:dark;
+  --bg:#131209;
+  --panel:#181818;
+  --surface:#1F1F1F;
+  --raised:#272727;
+  --hover:#313131;
+  --text:#F2EDE4;
+  --muted:#A7A196;
+  --faint:#8A857B;
+  --accent:#E7C08F;
+  --accent-hover:#EFCFA6;
+  --ink:#131209;
+  --urgent:#F0A48C;
+  --line:rgba(242,237,228,.08);
+  --line-strong:rgba(242,237,228,.14);
+  --ease:cubic-bezier(.32,.72,0,1);
+  --font:"Geist",ui-sans-serif,system-ui,sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --s-25:2px;--s-50:4px;--s-75:8px;--s-100:12px;--s-200:16px;--s-300:24px;
+  --s-400:32px;--s-500:40px;--s-600:48px;--s-700:64px;--s-800:80px;--s-900:96px;
+  interpolate-size:allow-keywords;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:var(--s-900);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+html.menu-open{overflow:hidden}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:1rem;line-height:1.5rem;font-weight:400;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip}
+h1,h2,h3,p,ul,ol,figure,blockquote{margin:0}
+ul,ol{padding:0;list-style:none}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+button,input{font:inherit;color:inherit;letter-spacing:inherit}
+button{cursor:pointer}
+strong{font-weight:600}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em;text-wrap:balance}
+p,li,blockquote,figcaption,summary{text-wrap:pretty}
+::selection{background:var(--accent);color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.icon{width:20px;height:20px;flex:none;fill:currentColor}
+.icon-sm{width:16px;height:16px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:0}
+.muted{color:var(--muted)}
+.faint{color:var(--faint)}
+.t-xs{font-size:.75rem;line-height:1rem}
+.t-sm{font-size:.875rem;line-height:1.25rem}
+.t-lg{font-size:1.125rem;line-height:1.75rem}
+.t-xl{font-size:1.25rem;line-height:1.75rem}
+.label{font-family:var(--mono);font-size:.75rem;line-height:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:var(--s-300)}
+@media (max-width:479px){.wrap{padding-inline:var(--s-200)}}
+.section{padding-block:var(--s-700)}
+@media (min-width:768px){.section{padding-block:var(--s-900)}}
+.section-head{display:grid;gap:var(--s-200);margin-bottom:var(--s-600)}
+.h2{font-size:1.875rem;line-height:2.25rem;max-width:680px}
+@media (min-width:768px){.h2{font-size:2.25rem;line-height:2.5rem}}
+.lead{color:var(--muted);max-width:600px}
+
+/* Skip link */
+.skip{position:fixed;left:var(--s-200);top:var(--s-200);z-index:100;padding:var(--s-75) var(--s-100);border-radius:8px;background:var(--accent);color:var(--ink);font-size:.875rem;line-height:1.25rem;font-weight:600;transform:translateY(-200%);transition:transform 400ms var(--ease)}
+.skip:focus{transform:none}
+
+/* Buttons */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:var(--s-75);padding:var(--s-75) var(--s-100);border:0;border-radius:12px;background:var(--accent);color:var(--ink);font-size:1rem;line-height:1.5rem;font-weight:600;white-space:nowrap;transition:background-color 400ms var(--ease),transform 400ms var(--ease)}
+.btn:hover{background:var(--accent-hover)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{cursor:progress}
+.btn-sm{font-size:.875rem;line-height:1.25rem;border-radius:9999px}
+.link-btn{padding:0;border:0;background:none;color:var(--accent);font-size:.875rem;line-height:1.25rem;font-weight:600;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;transition:color 400ms var(--ease)}
+.link-btn:hover{color:var(--accent-hover)}
+
+/* Fluid island nav */
+.nav-shell{position:fixed;top:calc(var(--s-300) + env(safe-area-inset-top,0px));left:0;right:0;z-index:50;display:flex;justify-content:center;padding-inline:var(--s-200);pointer-events:none}
+.nav{pointer-events:auto;display:flex;align-items:center;gap:var(--s-50);width:max-content;max-width:100%;margin-inline:auto;padding:var(--s-50);border-radius:9999px;border:1px solid var(--line-strong);background:rgba(31,31,31,.72);-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%)}
+.brand{display:inline-flex;align-items:center;gap:var(--s-75);padding:var(--s-75) var(--s-100);border-radius:9999px;font-weight:600;letter-spacing:-.01em}
+.brand svg{width:20px;height:20px}
+.nav-links{display:none;align-items:center;gap:var(--s-25)}
+.nav-links a{display:block;padding:var(--s-75) var(--s-100);border-radius:9999px;font-size:.875rem;line-height:1.25rem;color:var(--muted);transition:color 400ms var(--ease),background-color 400ms var(--ease)}
+.nav-links a:hover{color:var(--text);background:rgba(242,237,228,.06)}
+.nav-links a[aria-current="true"]{color:var(--text);background:rgba(242,237,228,.1)}
+.burger{position:relative;width:40px;height:40px;border:0;border-radius:9999px;background:transparent;transition:background-color 400ms var(--ease)}
+.burger:hover{background:rgba(242,237,228,.06)}
+.burger span{position:absolute;left:12px;right:12px;height:2px;border-radius:2px;background:currentColor;transition:transform 700ms var(--ease)}
+.burger span:nth-child(1){top:15px}
+.burger span:nth-child(2){top:23px}
+.burger[aria-expanded="true"] span:nth-child(1){transform:translateY(4px) rotate(45deg)}
+.burger[aria-expanded="true"] span:nth-child(2){transform:translateY(-4px) rotate(-45deg)}
+@media (min-width:900px){.nav-links{display:flex}.burger{display:none}}
+
+.menu{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:center;gap:var(--s-600);padding:calc(var(--s-900) + env(safe-area-inset-top,0px)) var(--s-300) calc(var(--s-600) + env(safe-area-inset-bottom,0px));background:rgba(0,0,0,.8);-webkit-backdrop-filter:blur(64px);backdrop-filter:blur(64px);opacity:0;visibility:hidden;transition:opacity 700ms var(--ease),visibility 0s linear 700ms}
+.menu.is-open{opacity:1;visibility:visible;transition:opacity 700ms var(--ease)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.menu{background:rgba(0,0,0,.94)}}
+.menu ul{display:grid;gap:var(--s-75)}
+.menu li{overflow:hidden}
+.menu li a,.menu .menu-cta{display:inline-block;transform:translateY(48px);opacity:0;transition:transform 700ms var(--ease),opacity 700ms var(--ease)}
+.menu li a{font-size:2.25rem;line-height:2.5rem;font-weight:600;letter-spacing:-.02em;color:var(--muted)}
+.menu li a[aria-current="true"],.menu li a:hover{color:var(--text)}
+.menu.is-open li a,.menu.is-open .menu-cta{transform:none;opacity:1}
+.menu.is-open li:nth-child(1) a{transition-delay:100ms}
+.menu.is-open li:nth-child(2) a{transition-delay:150ms}
+.menu.is-open li:nth-child(3) a{transition-delay:200ms}
+.menu.is-open li:nth-child(4) a{transition-delay:250ms}
+.menu.is-open li:nth-child(5) a{transition-delay:300ms}
+.menu.is-open .menu-cta{transition-delay:350ms}
+.menu-cta-wrap{overflow:hidden}
+@media (min-width:900px){.menu{display:none}}
+
+/* Scroll interpolation */
+.reveal{transition:opacity 900ms var(--ease),transform 900ms var(--ease),filter 900ms var(--ease);transition-delay:var(--d,0ms)}
+html.js .reveal:not(.is-in){opacity:0;transform:translateY(64px);filter:blur(12px)}
+
+/* Hero */
+.hero{padding-top:var(--s-900)}
+.hero-copy{display:grid;gap:var(--s-300);padding-top:var(--s-700)}
+.hero-title{max-width:680px;padding-bottom:var(--s-75);font-size:2.25rem;line-height:2.5rem;letter-spacing:-.03em;background:linear-gradient(90deg,#FFFFFF,#9B9B9B);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media (min-width:768px){.hero-title{font-size:3rem;line-height:1}}
+.hero-sub{max-width:680px;color:var(--muted)}
+.nw{white-space:nowrap}
+
+/* Signup form */
+.signup{display:grid;gap:var(--s-100);max-width:560px}
+.field{display:flex;gap:var(--s-50);padding:var(--s-50);border-radius:16px;border:1px solid var(--line-strong);background:var(--surface);transition:border-color 400ms var(--ease)}
+.field:has(input:focus-visible){border-color:var(--accent)}
+.field input{flex:1;min-width:0;padding:var(--s-75) var(--s-100);border:0;border-radius:12px;background:transparent;font-size:1rem;line-height:1.5rem;outline:none}
+.field input::placeholder{color:var(--faint)}
+.btn-skel{position:absolute;inset:var(--s-100) var(--s-200);border-radius:4px;background:rgba(19,18,9,.3);opacity:0;pointer-events:none}
+.signup.is-loading .btn-label{opacity:0}
+.signup.is-loading .btn-skel{opacity:1;animation:skel 900ms var(--ease) infinite alternate}
+@keyframes skel{from{opacity:.35}to{opacity:.8}}
+.signup.has-error .field{border-color:var(--urgent)}
+.form-msg{display:flex;gap:var(--s-75);align-items:flex-start;color:var(--urgent)}
+.form-msg:empty{display:none}
+.form-hint{display:flex;flex-wrap:wrap;gap:var(--s-75) var(--s-300);color:var(--muted)}
+.form-hint span{display:inline-flex;align-items:center;gap:var(--s-50)}
+.form-hint .icon{color:var(--accent)}
+.form-done{display:grid;grid-template-columns:auto 1fr;gap:var(--s-100);align-items:start;padding:var(--s-200);border-radius:16px;border:1px solid var(--line-strong);background:var(--surface)}
+.form-done .done-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:9999px;background:var(--accent);color:var(--ink)}
+.form-done > div{display:grid;gap:var(--s-75);justify-items:start}
+@media (max-width:559px){.field{flex-direction:column}.field .btn{width:100%}}
+
+.proof{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-100) var(--s-300)}
+.faces{display:flex}
+.faces span{display:grid;place-items:center;width:32px;height:32px;margin-left:calc(var(--s-75) * -1);border-radius:9999px;border:2px solid var(--bg);background:var(--av);color:var(--ink);font-size:.75rem;line-height:1rem;font-weight:600}
+.faces span:first-child{margin-left:0}
+.proof-text{display:grid}
+.stars{display:flex;gap:var(--s-25);color:var(--accent)}
+.stars .icon{width:14px;height:14px}
+
+/* Product mockup */
+.mock{margin-top:var(--s-700);padding:var(--s-75);border-radius:24px;border:1px solid var(--line);background:var(--surface)}
+.win{overflow:hidden;border-radius:16px;background:var(--panel)}
+.win-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s-75) var(--s-200);padding:var(--s-100) var(--s-200);background:var(--raised)}
+.win-title{display:inline-flex;align-items:center;gap:var(--s-75);font-weight:600}
+.win-title svg{width:16px;height:16px}
+.status{display:inline-flex;align-items:center;gap:var(--s-75);padding:var(--s-50) var(--s-100);border-radius:9999px;background:rgba(231,192,143,.12);color:var(--accent)}
+.dot{width:8px;height:8px;border-radius:9999px;background:var(--accent)}
+@media (prefers-reduced-motion:no-preference){.dot{animation:breathe 2400ms var(--ease) infinite alternate}}
+@keyframes breathe{from{opacity:1}to{opacity:.35}}
+.win-body{display:grid;gap:var(--s-200);padding:var(--s-200)}
+@media (min-width:860px){.win-body{grid-template-columns:5fr 7fr}}
+.pane{display:flex;flex-direction:column;gap:var(--s-200);padding:var(--s-300);border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+@media (max-width:479px){.pane{padding:var(--s-200)}}
+.task{font-weight:500}
+.timer{font-size:2.25rem;line-height:2.5rem;font-weight:500;letter-spacing:-.02em}
+@media (min-width:768px){.timer{font-size:3.75rem;line-height:1}}
+.progress{height:4px;overflow:hidden;border-radius:9999px;background:var(--hover)}
+.progress span{display:block;height:100%;background:var(--accent);transform-origin:left;transform:scaleX(.5)}
+.times{display:flex;justify-content:space-between;color:var(--faint)}
+.passed{display:grid;grid-template-columns:auto 1fr;gap:var(--s-100);margin-top:auto;padding:var(--s-200);border-radius:8px;border:1px solid rgba(240,164,140,.24);background:var(--raised)}
+.passed-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:rgba(240,164,140,.14);color:var(--urgent)}
+.passed > div{display:grid;gap:var(--s-50)}
+.passed-label{color:var(--urgent)}
+.queue-head{display:flex;align-items:center;justify-content:space-between}
+.count{padding:var(--s-25) var(--s-75);border-radius:9999px;background:var(--raised)}
+.queue{display:grid;gap:var(--s-50)}
+.q{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:var(--s-100);padding:var(--s-75);border-radius:8px;background:var(--raised)}
+.q.bump{animation:bump 1200ms var(--ease)}
+@keyframes bump{from{background:#3d3a33}to{background:var(--raised)}}
+.app{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:var(--hover);color:var(--text)}
+.q-main{display:grid;min-width:0}
+.q-title{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:500}
+.q .n{min-width:32px;text-align:right;color:var(--muted)}
+
+/* Timeline */
+.tl{display:grid;gap:var(--s-300);padding:var(--s-400);border-radius:24px;border:1px solid var(--line);background:var(--surface)}
+@media (max-width:767px){.tl{padding:var(--s-300) var(--s-200)}}
+.tl-row{display:grid;grid-template-columns:1fr;gap:var(--s-100);align-items:center}
+@media (min-width:768px){.tl-row{grid-template-columns:220px 1fr;gap:var(--s-300)}}
+.tl-label{display:grid;gap:var(--s-25)}
+.tl-label .t-sm{font-weight:600}
+.tl-track{position:relative;height:48px;overflow:hidden;border-radius:8px;background:var(--raised)}
+.tick{position:absolute;bottom:0;width:2px;margin-left:-1px;height:var(--h,70%);border-radius:1px;background:var(--muted);opacity:.75;transform-origin:bottom;transition:transform 700ms var(--ease);transition-delay:calc(var(--i,0) * 10ms + 200ms)}
+.blk{position:absolute;top:6px;bottom:6px;border-radius:4px}
+.blk-focus{background:var(--accent)}
+.blk-meet{background:rgba(167,161,150,.28)}
+.urg{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--urgent)}
+.dig{position:absolute;top:50%;width:12px;height:12px;border-radius:9999px;border:2px solid var(--accent);background:var(--bg);transform:translate(-50%,-50%)}
+html.js .tl:not(.is-in) .tick{transform:scaleY(0)}
+.tl-axis{position:relative;height:16px;color:var(--faint)}
+.tl-axis span{position:absolute;top:0;transform:translateX(-50%)}
+.tl-axis span:first-child{transform:none}
+.tl-axis span:last-child{transform:translateX(-100%)}
+.tl-legend{display:flex;flex-wrap:wrap;gap:var(--s-100) var(--s-300)}
+.tl-legend li{display:inline-flex;align-items:center;gap:var(--s-75)}
+.sw{display:inline-block;flex:none}
+.sw-tick{width:2px;height:12px;background:var(--muted)}
+.sw-meet{width:16px;height:8px;border-radius:2px;background:rgba(167,161,150,.28)}
+.sw-focus{width:16px;height:8px;border-radius:2px;background:var(--accent)}
+.sw-dig{width:10px;height:10px;border-radius:9999px;border:2px solid var(--accent)}
+.sw-urg{width:2px;height:12px;background:var(--urgent)}
+.source{margin-top:var(--s-200);max-width:600px}
+
+/* Tagline reveal */
+.tagline{padding-block:var(--s-900)}
+@media (min-width:768px){.tagline{padding-block:calc(var(--s-900) + var(--s-700))}}
+.tagline-text{max-width:680px;font-size:2.25rem;line-height:2.5rem;font-weight:600;letter-spacing:-.03em;text-wrap:balance}
+@media (min-width:768px){.tagline-text{font-size:3rem;line-height:1}}
+.tagline-text .line{display:block}
+.tagline-text .line + .line{margin-top:var(--s-200)}
+html.js .tagline-text .w{color:rgba(242,237,228,.28);transition:color 700ms var(--ease)}
+html.js .tagline-text .w.on{color:var(--text)}
+
+/* Benefits */
+.benefits{display:grid;gap:var(--s-200)}
+@media (min-width:768px){.benefits{grid-template-columns:repeat(2,1fr)}}
+.card{display:flex;flex-direction:column;gap:var(--s-200);padding:var(--s-400);border-radius:24px;border:1px solid var(--line);background:var(--surface);transition:border-color 400ms var(--ease),transform 700ms var(--ease)}
+@media (max-width:479px){.card{padding:var(--s-300)}}
+.card:hover{border-color:var(--line-strong)}
+.card-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--raised);color:var(--accent)}
+.card h3{font-size:1.25rem;line-height:1.75rem}
+.card p{color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:var(--s-75);align-self:flex-start;margin-top:auto;padding:var(--s-50) var(--s-100);border-radius:9999px;background:var(--raised);color:var(--text)}
+.chip .icon{width:14px;height:14px;color:var(--accent)}
+
+/* Steps */
+.steps{display:grid;gap:var(--s-600)}
+@media (min-width:768px){.steps{grid-template-columns:repeat(3,1fr);gap:var(--s-400)}}
+.step{display:grid;gap:var(--s-200);align-content:start}
+.step-top{display:flex;align-items:center;gap:var(--s-100)}
+.step-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:9999px;border:1px solid var(--line-strong);color:var(--accent)}
+.step h3{font-size:1.25rem;line-height:1.75rem}
+.step p{color:var(--muted)}
+
+/* Proof */
+.case{display:grid;gap:var(--s-400);padding:var(--s-400);border-radius:24px;border:1px solid var(--line);background:var(--surface)}
+@media (min-width:860px){.case{grid-template-columns:7fr 5fr;gap:var(--s-600);padding:var(--s-500)}}
+@media (max-width:479px){.case{padding:var(--s-300)}}
+.quote{display:flex;flex-direction:column;gap:var(--s-300)}
+.quote blockquote p{font-size:1.125rem;line-height:1.75rem}
+.case .quote blockquote p{font-size:1.5rem;line-height:2rem;font-weight:500;letter-spacing:-.01em}
+.who{display:flex;align-items:center;gap:var(--s-100);margin-top:auto}
+.who .avatar{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:9999px;background:var(--av);color:var(--ink);font-size:.875rem;line-height:1.25rem;font-weight:600}
+.who span:last-child{display:grid}
+.stat{display:grid;gap:var(--s-200);align-content:start;padding:var(--s-300);border-radius:16px;background:var(--raised)}
+.stat-value{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-75) var(--s-100);font-size:2.25rem;line-height:2.5rem;font-weight:600;letter-spacing:-.02em}
+.stat-value .icon{width:24px;height:24px;color:var(--faint)}
+.stat-value .after{color:var(--accent)}
+.quotes{display:grid;gap:var(--s-200);margin-top:var(--s-200)}
+@media (min-width:768px){.quotes{grid-template-columns:repeat(2,1fr)}}
+.quotes .quote{padding:var(--s-400);border-radius:24px;border:1px solid var(--line);background:var(--surface)}
+@media (max-width:479px){.quotes .quote{padding:var(--s-300)}}
+
+/* FAQ */
+.faq{display:grid;gap:var(--s-600)}
+@media (min-width:900px){.faq{grid-template-columns:4fr 7fr;gap:var(--s-700)}.faq-intro{position:sticky;top:var(--s-900);align-self:start}}
+.faq-intro{display:grid;gap:var(--s-200)}
+.faq-intro .select{user-select:all;color:var(--text);font-weight:500}
+.faq-list{display:grid;gap:var(--s-75)}
+.qa{border-radius:16px;border:1px solid var(--line);background:var(--surface);transition:border-color 400ms var(--ease)}
+.qa:hover,.qa[open]{border-color:var(--line-strong)}
+.qa summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s-200);padding:var(--s-200) var(--s-300);border-radius:16px;font-weight:500;list-style:none;cursor:pointer}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary .icon{color:var(--muted);transition:transform 700ms var(--ease)}
+.qa[open] summary .icon{transform:rotate(45deg)}
+.qa-a{padding:0 var(--s-300) var(--s-300);color:var(--muted)}
+.qa::details-content{block-size:0;overflow:hidden;transition:block-size 700ms var(--ease),content-visibility 700ms allow-discrete}
+.qa[open]::details-content{block-size:auto}
+
+/* Final CTA */
+.cta{display:grid;gap:var(--s-300);padding:var(--s-700) var(--s-400);border-radius:24px;border:1px solid var(--line);background:var(--surface)}
+@media (min-width:768px){.cta{padding:var(--s-800) var(--s-700)}}
+@media (max-width:479px){.cta{padding:var(--s-400) var(--s-200)}}
+.cta > *{max-width:680px}
+.cta-list{display:flex;flex-wrap:wrap;gap:var(--s-75) var(--s-300);color:var(--muted)}
+.cta-list li{display:inline-flex;align-items:center;gap:var(--s-75)}
+.cta-list .icon{color:var(--accent)}
+
+/* Footer */
+.rule{height:1px;margin:0;border:0;background:var(--line)}
+.foot{padding-block:var(--s-700) var(--s-600)}
+.foot-top{display:grid;gap:var(--s-600)}
+@media (min-width:768px){.foot-top{grid-template-columns:4fr 7fr}}
+.foot-brand{display:grid;gap:var(--s-200);align-content:start;max-width:320px}
+.foot-nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--s-400)}
+.foot-nav > div{display:grid;gap:var(--s-100);align-content:start}
+.foot-nav ul{display:grid;gap:var(--s-75)}
+.foot-nav a{font-size:.875rem;line-height:1.25rem;color:var(--muted);transition:color 400ms var(--ease)}
+.foot-nav a:hover{color:var(--text)}
+.foot-nav .select{user-select:all;font-size:.875rem;line-height:1.25rem;color:var(--muted);overflow-wrap:anywhere}
+.foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s-75) var(--s-300);margin-top:var(--s-700)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important;transition-delay:0ms!important}
+  html.js .reveal:not(.is-in){opacity:1;transform:none;filter:none}
+  html.js .tl:not(.is-in) .tick{transform:none}
+}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Salam lit le contenu de mes messages ?","acceptedAnswer":{"@type":"Answer","text":"Non. Salam regroupe les notifications directement sur votre appareil. Le texte des messages ne quitte jamais votre ordinateur et personne chez Salam n’y a accès."}},
+{"@type":"Question","name":"Et si quelqu’un a besoin de moi en urgence ?","acceptedAnswer":{"@type":"Answer","text":"Ses messages passent immédiatement s’il fait partie de vos contacts prioritaires, ou si le message contient un de vos mots d’alerte, comme « prod » ou « client bloqué ». Vos collègues voient aussi un bouton « Déranger quand même »."}},
+{"@type":"Question","name":"Quels outils sont compatibles ?","acceptedAnswer":{"@type":"Answer","text":"Slack, Microsoft Teams, Gmail, Outlook, Google Agenda et le calendrier Outlook. Notion et Linear arrivent au premier trimestre 2027."}},
+{"@type":"Question","name":"Salam fonctionne sur mobile ?","acceptedAnswer":{"@type":"Answer","text":"Oui, sur iOS 17 et Android 13 ou plus récents. Vos plages calmes et vos exceptions se synchronisent entre tous vos appareils."}},
+{"@type":"Question","name":"Combien coûte Salam après l’essai ?","acceptedAnswer":{"@type":"Answer","text":"7,40 € par personne et par mois en facturation annuelle, ou 8,90 € sans engagement. L’essai de 14 jours donne accès à toutes les fonctions."}},
+{"@type":"Question","name":"Je dois donner une carte bancaire pour l’essai ?","acceptedAnswer":{"@type":"Answer","text":"Non. Vous ajoutez un moyen de paiement seulement si vous décidez de continuer. Sans action de votre part, le compte passe en lecture seule à la fin de l’essai."}},
+{"@type":"Question","name":"Comment résilier mon abonnement ?","acceptedAnswer":{"@type":"Answer","text":"Depuis Réglages, puis Abonnement, en deux clics. Si vous résiliez dans les 30 jours qui suivent votre premier paiement, nous vous remboursons intégralement."}},
+{"@type":"Question","name":"Où sont hébergées mes données ?","acceptedAnswer":{"@type":"Answer","text":"En France, dans deux centres de données situés à Paris. Vous pouvez exporter ou supprimer votre compte à tout moment depuis vos réglages."}},
+{"@type":"Question","name":"Salam convient à une équipe entière ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Le forfait Équipe ajoute un tableau de bord du temps protégé par personne, sans jamais afficher le contenu des messages. Il démarre à 5 personnes."}}
+]}
+</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-calendar-check" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-38.34-85.66a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L116,164.69l42.34-42.35A8,8,0,0,1,169.66,122.34Z"/></symbol><symbol id="i-tray" viewBox="0 0 256 256"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,16V152h-28.7A15.86,15.86,0,0,0,168,156.69L148.69,176H107.31L88,156.69A15.86,15.86,0,0,0,76.69,152H48V48Zm0,160H48V168H76.69L96,187.31A15.86,15.86,0,0,0,107.31,192h41.38A15.86,15.86,0,0,0,160,187.31L179.31,168H208v40Z"/></symbol><symbol id="i-siren" viewBox="0 0 256 256"><path d="M120,16V8a8,8,0,0,1,16,0v8a8,8,0,0,1-16,0Zm80,32a8,8,0,0,0,5.66-2.34l8-8a8,8,0,0,0-11.32-11.32l-8,8A8,8,0,0,0,200,48ZM50.34,45.66A8,8,0,0,0,61.66,34.34l-8-8A8,8,0,0,0,42.34,37.66Zm87,26.45a8,8,0,1,0-2.64,15.78C153.67,91.08,168,108.32,168,128a8,8,0,0,0,16,0C184,100.6,163.93,76.57,137.32,72.11ZM232,176v24a16,16,0,0,1-16,16H40a16,16,0,0,1-16-16V176a16,16,0,0,1,16-16V128a88,88,0,0,1,88.67-88c48.15.36,87.33,40.29,87.33,89v31A16,16,0,0,1,232,176ZM56,160H200V129c0-40-32.05-72.71-71.45-73H128a72,72,0,0,0-72,72Zm160,40V176H40v24H216Z"/></symbol><symbol id="i-users-three" viewBox="0 0 256 256"><path d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"/></symbol><symbol id="i-plugs-connected" viewBox="0 0 256 256"><path d="M237.66,18.34a8,8,0,0,0-11.32,0l-52.4,52.41-5.37-5.38a32.05,32.05,0,0,0-45.26,0L100,88.69l-6.34-6.35A8,8,0,0,0,82.34,93.66L88.69,100,65.37,123.31a32,32,0,0,0,0,45.26l5.38,5.37-52.41,52.4a8,8,0,0,0,11.32,11.32l52.4-52.41,5.37,5.38a32,32,0,0,0,45.26,0L156,167.31l6.34,6.35a8,8,0,0,0,11.32-11.32L167.31,156l23.32-23.31a32,32,0,0,0,0-45.26l-5.38-5.37,52.41-52.4A8,8,0,0,0,237.66,18.34Zm-116.29,161a16,16,0,0,1-22.62,0L76.69,157.25a16,16,0,0,1,0-22.62L100,111.31,144.69,156Zm57.94-57.94L156,144.69,111.31,100l23.32-23.31a16,16,0,0,1,22.62,0l22.06,22A16,16,0,0,1,179.31,121.37ZM88.57,35A8,8,0,0,1,103.43,29l8,20A8,8,0,0,1,96.57,55ZM24.57,93A8,8,0,0,1,35,88.57l20,8A8,8,0,0,1,49,111.43l-20-8A8,8,0,0,1,24.57,93ZM231.43,163a8,8,0,0,1-10.4,4.46l-20-8A8,8,0,1,1,207,144.57l20,8A8,8,0,0,1,231.43,163Zm-64,58.06A8,8,0,0,1,152.57,227l-8-20A8,8,0,0,1,159.43,201Z"/></symbol><symbol id="i-sliders-horizontal" viewBox="0 0 256 256"><path d="M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z"/></symbol><symbol id="i-envelope-simple-open" viewBox="0 0 256 256"><path d="M228.44,89.34l-96-64a8,8,0,0,0-8.88,0l-96,64A8,8,0,0,0,24,96V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V96A8,8,0,0,0,228.44,89.34ZM128,41.61l81.91,54.61-67,47.78H113.11l-67-47.78ZM40,200V111.53l65.9,47a8,8,0,0,0,4.65,1.49h34.9a8,8,0,0,0,4.65-1.49l65.9-47V200Z"/></symbol><symbol id="i-check" viewBox="0 0 256 256"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-plus" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"/></symbol><symbol id="i-arrow-right" viewBox="0 0 256 256"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></symbol><symbol id="i-slack-logo" viewBox="0 0 256 256"><path d="M221.13,128A32,32,0,0,0,184,76.31V56a32,32,0,0,0-56-21.13A32,32,0,0,0,76.31,72H56a32,32,0,0,0-21.13,56A32,32,0,0,0,72,179.69V200a32,32,0,0,0,56,21.13A32,32,0,0,0,179.69,184H200a32,32,0,0,0,21.13-56ZM72,152a16,16,0,1,1-16-16H72Zm48,48a16,16,0,0,1-32,0V152a16,16,0,0,1,16-16h16Zm0-80H56a16,16,0,0,1,0-32h48a16,16,0,0,1,16,16Zm0-48H104a16,16,0,1,1,16-16Zm16-16a16,16,0,0,1,32,0v48a16,16,0,0,1-16,16H136Zm16,160a16,16,0,0,1-16-16V184h16a16,16,0,0,1,0,32Zm48-48H152a16,16,0,0,1-16-16V136h64a16,16,0,0,1,0,32Zm0-48H184V104a16,16,0,1,1,16,16Z"/></symbol><symbol id="i-microsoft-teams-logo" viewBox="0 0 256 256"><path d="M112,104a8,8,0,0,1-8,8H96v40a8,8,0,0,1-16,0V112H72a8,8,0,0,1,0-16h32A8,8,0,0,1,112,104ZM232,92.74V152a40,40,0,0,1-36.63,39.85,64,64,0,0,1-118.7.15H40a16,16,0,0,1-16-16V80A16,16,0,0,1,40,64H96.81a40,40,0,0,1,73.31-28.85A32,32,0,0,1,211.69,80h7.57A12.76,12.76,0,0,1,232,92.74ZM112,56a23.82,23.82,0,0,0,1.38,8H136a16,16,0,0,1,15.07,10.68A24,24,0,1,0,112,56Zm24,120h0V80H40v96h96Zm48-80H152v80a16,16,0,0,1-16,16H94.44A48,48,0,0,0,184,168Zm16-32a16,16,0,0,0-24.4-13.6A39.89,39.89,0,0,1,168,80h16A16,16,0,0,0,200,64Zm16,32H200v72a62.76,62.76,0,0,1-.36,6.75A24,24,0,0,0,216,152Z"/></symbol><symbol id="i-envelope-simple" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"/></symbol><symbol id="i-star" viewBox="0 0 256 256"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"/></symbol></svg>
+<a class="skip" href="#contenu">Aller au contenu</a>
+
+<header class="nav-shell">
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13a7 7 0 0 1 14 0Z" fill="#E7C08F"/><rect x="3" y="15" width="18" height="2" rx="1" fill="currentColor"/><rect x="7" y="19" width="10" height="2" rx="1" fill="currentColor"/></svg>
+      Salam
+    </a>
+    <ul class="nav-links" data-nav>
+      <li><a href="#probleme">Le problème</a></li>
+      <li><a href="#avantages">Avantages</a></li>
+      <li><a href="#fonctionnement">Fonctionnement</a></li>
+      <li><a href="#avis">Avis</a></li>
+      <li><a href="#questions">Questions</a></li>
+    </ul>
+    <a class="btn btn-sm" href="#essai">Essayer gratuitement</a>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><span></span><span></span></button>
+  </nav>
+</header>
+
+<div class="menu" id="menu" inert aria-hidden="true">
+  <ul data-nav>
+    <li><a href="#probleme">Le problème</a></li>
+    <li><a href="#avantages">Avantages</a></li>
+    <li><a href="#fonctionnement">Fonctionnement</a></li>
+    <li><a href="#avis">Avis</a></li>
+    <li><a href="#questions">Questions</a></li>
+  </ul>
+  <div class="menu-cta-wrap"><a class="btn menu-cta" href="#essai">Essayer 14 jours gratuitement</a></div>
+</div>
+
+<main id="contenu" tabindex="-1">
+
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div class="hero-copy">
+        <h1 class="hero-title reveal" id="hero-title">Deux heures de calme <span class="nw">par jour,</span><br> sans rater <span class="nw">une urgence</span></h1>
+        <p class="hero-sub t-lg reveal" style="--d:120ms">Salam retient vos notifications Slack, Teams et Gmail pendant vos plages de travail, puis vous les livre en un seul résumé. Les vraies urgences passent toujours.</p>
+
+        <form class="signup reveal" style="--d:240ms" novalidate data-signup>
+          <div class="field">
+            <label class="sr-only" for="email-hero">Adresse mail professionnelle</label>
+            <input id="email-hero" name="email" type="email" inputmode="email" autocomplete="email" placeholder="vous@entreprise.fr" required aria-describedby="email-hero-msg">
+            <button class="btn" type="submit"><span class="btn-label">Essayer 14 jours gratuitement</span><span class="btn-skel" aria-hidden="true"></span></button>
+          </div>
+          <p class="form-msg t-sm" id="email-hero-msg" aria-live="polite"></p>
+          <div class="form-done" hidden>
+            <span class="done-icon"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"/></svg></span>
+            <div><p data-done-text></p><button class="link-btn" type="button" data-reset>Utiliser une autre adresse</button></div>
+          </div>
+          <p class="form-hint t-sm">
+            <span><svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"/></svg>Sans carte bancaire</span>
+            <span><svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"/></svg>Installation en 2 minutes</span>
+          </p>
+        </form>
+
+        <div class="proof reveal" style="--d:360ms">
+          <div class="faces" aria-hidden="true">
+            <span style="--av:#C9A06B">IB</span><span style="--av:#8FA7C9">MK</span><span style="--av:#9CC3A0">AD</span><span style="--av:#C98F8F">TG</span>
+          </div>
+          <div class="proof-text">
+            <p class="t-sm"><strong>3&#8239;412 équipes</strong> protègent leurs matinées avec Salam</p>
+            <p class="t-xs muted" style="display:flex;align-items:center;gap:8px">
+              <span class="stars" aria-hidden="true"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></span>
+              4,8 sur 5, 1&#8239;206 avis
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <figure class="mock reveal" style="--d:480ms" aria-label="Aperçu de l’application Salam pendant une plage calme">
+        <div class="win">
+          <div class="win-bar">
+            <span class="win-title t-sm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13a7 7 0 0 1 14 0Z" fill="#E7C08F"/><rect x="3" y="15" width="18" height="2" rx="1" fill="currentColor"/><rect x="7" y="19" width="10" height="2" rx="1" fill="currentColor"/></svg>Salam</span>
+            <span class="status t-xs"><span class="dot" aria-hidden="true"></span>En plage calme jusqu’à 11&nbsp;h&nbsp;40</span>
+          </div>
+          <div class="win-body">
+            <section class="pane" aria-label="Plage calme en cours">
+              <p class="label">Plage calme en cours</p>
+              <p class="task t-lg">Spec du nouveau parcours de paiement</p>
+              <p class="timer mono" role="timer" data-timer data-left="2832" data-total="5700">47:12</p>
+              <div class="progress" aria-hidden="true"><span data-progress></span></div>
+              <div class="times mono t-xs"><span>Début 10&nbsp;h&nbsp;05</span><span>Fin 11&nbsp;h&nbsp;40</span></div>
+              <div class="passed">
+                <span class="passed-icon"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-siren"/></svg></span>
+                <div>
+                  <p class="t-xs passed-label">Urgence transmise à 10&nbsp;h&nbsp;59</p>
+                  <p class="t-sm"><strong>Karim Belkacem</strong>, astreinte</p>
+                  <p class="t-sm muted">«&nbsp;Le paiement renvoie des erreurs 502 depuis 10&nbsp;h&nbsp;58.&nbsp;»</p>
+                </div>
+              </div>
+            </section>
+            <section class="pane" aria-label="Notifications en attente">
+              <div class="queue-head">
+                <p class="label">En attente</p>
+                <span class="count mono t-sm" data-queue-total>31</span>
+              </div>
+              <ul class="queue">
+                <li class="q" data-count="12"><span class="app"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-slack-logo"/></svg></span><span class="q-main"><span class="t-sm q-title">#paiement</span><span class="t-xs muted">Léa, Tom et 3 autres</span></span><span class="n mono t-sm">12</span></li>
+                <li class="q" data-count="7"><span class="app"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-envelope-simple"/></svg></span><span class="q-main"><span class="t-sm q-title">Factures fournisseurs</span><span class="t-xs muted">Gmail</span></span><span class="n mono t-sm">7</span></li>
+                <li class="q" data-count="5"><span class="app"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-slack-logo"/></svg></span><span class="q-main"><span class="t-sm q-title">#général</span><span class="t-xs muted">Annonces et déjeuner</span></span><span class="n mono t-sm">5</span></li>
+                <li class="q" data-count="4"><span class="app"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-microsoft-teams-logo"/></svg></span><span class="q-main"><span class="t-sm q-title">Point hebdo design</span><span class="t-xs muted">Teams, Sofia Marchetti</span></span><span class="n mono t-sm">4</span></li>
+                <li class="q" data-count="3"><span class="app"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-slack-logo"/></svg></span><span class="q-main"><span class="t-sm q-title">Léa Fontaine</span><span class="t-xs muted">Message direct</span></span><span class="n mono t-sm">3</span></li>
+              </ul>
+              <p class="t-xs muted">Un seul résumé à 11&nbsp;h&nbsp;40, trié par priorité</p>
+            </section>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="probleme" aria-labelledby="probleme-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 class="h2" id="probleme-title">Une interruption coûte 23 minutes de concentration</h2>
+        <p class="lead t-lg">C’est le temps moyen qu’il faut pour revenir pleinement à une tâche après avoir été coupé. Avec une notification toutes les 7 minutes, la journée ne laisse jamais ce temps.</p>
+      </div>
+      <figure class="tl reveal" aria-labelledby="tl-cap">
+        <figcaption id="tl-cap" class="sr-only">Comparaison d’une même journée de 9 h à 18 h. Sans Salam, 63 notifications coupent la journée, une toutes les 7 minutes. Avec Salam, deux plages calmes de 1 h 35 et 55 minutes, deux résumés livrés et une urgence transmise immédiatement.</figcaption>
+        <div class="tl-row">
+          <div class="tl-label"><p class="t-sm">Sans Salam</p><p class="t-xs muted">63&nbsp;notifications, une toutes les 7&nbsp;minutes</p></div>
+          <div class="tl-track" data-track="before" aria-hidden="true"></div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-label"><p class="t-sm">Avec Salam</p><p class="t-xs muted">2&nbsp;plages calmes, 2&nbsp;résumés, 1&nbsp;urgence transmise</p></div>
+          <div class="tl-track" data-track="after" aria-hidden="true"></div>
+        </div>
+        <div class="tl-row" aria-hidden="true">
+          <span></span>
+          <div class="tl-axis mono t-xs"><span style="left:0">9&nbsp;h</span><span style="left:33.333%">12&nbsp;h</span><span style="left:66.667%">15&nbsp;h</span><span style="left:100%">18&nbsp;h</span></div>
+        </div>
+        <ul class="tl-legend t-xs muted" aria-hidden="true">
+          <li><span class="sw sw-tick"></span>Notification</li>
+          <li><span class="sw sw-meet"></span>Réunion</li>
+          <li><span class="sw sw-focus"></span>Plage calme</li>
+          <li><span class="sw sw-dig"></span>Résumé livré</li>
+          <li><span class="sw sw-urg"></span>Urgence transmise</li>
+        </ul>
+      </figure>
+      <p class="source t-xs faint">Durée de reprise d’après les travaux de Gloria Mark, Université de Californie à Irvine. Journée type construite à partir des données d’usage moyennes de Salam.</p>
+    </div>
+  </section>
+
+  <section class="tagline" aria-label="Notre conviction">
+    <div class="wrap">
+      <p class="tagline-text" data-words>
+        <span class="line">Vos messages peuvent attendre une heure.</span>
+        <span class="line">Votre meilleure idée, elle, n’attendra pas.</span>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" id="avantages" aria-labelledby="avantages-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 class="h2" id="avantages-title">Ce que Salam change dans votre journée</h2>
+      </div>
+      <div class="benefits">
+        <article class="card reveal">
+          <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar-check"/></svg></span>
+          <h3>Des plages calmes sans y penser</h3>
+          <p>Salam lit votre agenda et protège chaque créneau libre de plus de 45 minutes. Vous ne réglez rien à la main.</p>
+          <span class="chip mono t-xs"><svg class="icon" aria-hidden="true"><use href="#i-calendar-check"/></svg>Mardi, 10&nbsp;h&nbsp;05 à 11&nbsp;h&nbsp;40</span>
+        </article>
+        <article class="card reveal" style="--d:120ms">
+          <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-tray"/></svg></span>
+          <h3>Un résumé au lieu de 60 alertes</h3>
+          <p>Les messages arrivent regroupés par conversation, avec en tête les demandes qui attendent une réponse de votre part.</p>
+          <span class="chip mono t-xs"><svg class="icon" aria-hidden="true"><use href="#i-tray"/></svg>31 messages, lus en 3&nbsp;min&nbsp;20</span>
+        </article>
+        <article class="card reveal">
+          <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-siren"/></svg></span>
+          <h3>Les urgences passent toujours</h3>
+          <p>Vos contacts prioritaires, l’astreinte et les mots d’alerte que vous choisissez traversent le filtre sans délai.</p>
+          <span class="chip mono t-xs"><svg class="icon" aria-hidden="true"><use href="#i-siren"/></svg>Karim B., astreinte, transmis</span>
+        </article>
+        <article class="card reveal" style="--d:120ms">
+          <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-users-three"/></svg></span>
+          <h3>Toute l’équipe sait qui est concentré</h3>
+          <p>Votre statut Slack et Teams affiche l’heure de fin de votre plage calme. Plus besoin de se demander si l’on dérange.</p>
+          <span class="chip mono t-xs"><svg class="icon" aria-hidden="true"><use href="#i-users-three"/></svg>Disponible à 11&nbsp;h&nbsp;40</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="fonctionnement" aria-labelledby="fonctionnement-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 class="h2" id="fonctionnement-title">Opérationnel en 2 minutes</h2>
+        <p class="lead t-lg">Aucune règle compliquée à écrire. Salam part de votre agenda et s’ajuste à vos habitudes au fil de la semaine.</p>
+      </div>
+      <ol class="steps">
+        <li class="step reveal">
+          <div class="step-top"><span class="step-icon"><svg class="icon" aria-hidden="true"><use href="#i-plugs-connected"/></svg></span><span class="label">Étape 1</span></div>
+          <h3>Connectez vos outils</h3>
+          <p>Google Agenda ou Outlook, puis Slack, Teams et Gmail. Salam demande seulement l’accès à vos notifications.</p>
+        </li>
+        <li class="step reveal" style="--d:120ms">
+          <div class="step-top"><span class="step-icon"><svg class="icon" aria-hidden="true"><use href="#i-sliders-horizontal"/></svg></span><span class="label">Étape 2</span></div>
+          <h3>Choisissez vos exceptions</h3>
+          <p>Ajoutez les personnes et les mots qui doivent toujours passer. Trois suffisent pour commencer.</p>
+        </li>
+        <li class="step reveal" style="--d:240ms">
+          <div class="step-top"><span class="step-icon"><svg class="icon" aria-hidden="true"><use href="#i-envelope-simple-open"/></svg></span><span class="label">Étape 3</span></div>
+          <h3>Travaillez, Salam fait le tri</h3>
+          <p>À la fin de chaque plage calme, vous recevez un seul résumé, classé par priorité.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="avis" aria-labelledby="avis-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 class="h2" id="avis-title">Ils ont retrouvé leurs matinées</h2>
+      </div>
+      <div class="case reveal">
+        <figure class="quote">
+          <blockquote><p>«&nbsp;Le résumé de fin de plage est devenu un rituel. Je lis 31 messages en trois minutes au lieu de les subir un par un toute la matinée.&nbsp;»</p></blockquote>
+          <figcaption class="who"><span class="avatar" style="--av:#C9A06B" aria-hidden="true">IB</span><span><strong class="t-sm">Inès Benali</strong><span class="t-sm muted">Directrice produit, Orée Santé</span></span></figcaption>
+        </figure>
+        <div class="stat">
+          <p class="label">Orée Santé, 84 personnes, Lyon</p>
+          <p class="stat-value mono"><span>38&nbsp;min</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg><span class="after">1&nbsp;h&nbsp;34</span></p>
+          <p class="t-sm muted">Temps de travail sans interruption, médiane par personne et par jour, six semaines après le déploiement.</p>
+        </div>
+      </div>
+      <div class="quotes">
+        <figure class="quote reveal">
+          <blockquote><p>«&nbsp;Avant, je gardais Slack ouvert par peur de rater l’astreinte. Maintenant l’astreinte passe, le reste attend et je termine mes revues de code le matin.&nbsp;»</p></blockquote>
+          <figcaption class="who"><span class="avatar" style="--av:#8FA7C9" aria-hidden="true">MK</span><span><strong class="t-sm">Mathis Kervella</strong><span class="t-sm muted">Développeur backend, Tramway Conseil</span></span></figcaption>
+        </figure>
+        <figure class="quote reveal" style="--d:120ms">
+          <blockquote><p>«&nbsp;On l’a déployé sur les 26 personnes du support. Les clients ne voient aucune différence et l’équipe a enfin du temps pour la documentation.&nbsp;»</p></blockquote>
+          <figcaption class="who"><span class="avatar" style="--av:#9CC3A0" aria-hidden="true">AD</span><span><strong class="t-sm">Aïssatou Diallo</strong><span class="t-sm muted">Responsable support, Pépite Assurances</span></span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="questions" aria-labelledby="questions-title">
+    <div class="wrap faq">
+      <div class="faq-intro reveal">
+        <h2 class="h2" id="questions-title">Questions fréquentes</h2>
+        <p class="muted">Une autre question&#8239;? Écrivez à <span class="select">bonjour@salam.example</span>, nous répondons en moins de 4 heures ouvrées.</p>
+      </div>
+      <div class="faq-list">
+        <details class="qa reveal"><summary>Salam lit le contenu de mes messages&#8239;?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="qa-a"><p>Non. Salam regroupe les notifications directement sur votre appareil. Le texte des messages ne quitte jamais votre ordinateur et personne chez Salam n’y a accès.</p></div></details>
+        <details class="qa reveal"><summary>Et si quelqu’un a besoin de moi en urgence&#8239;?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="qa-a"><p>Ses messages passent immédiatement s’il fait partie de vos contacts prioritaires, ou si le message contient un de vos mots d’alerte, comme «&nbsp;prod&nbsp;» ou «&nbsp;client bloqué&nbsp;». Vos collègues voient aussi un bouton «&nbsp;Déranger quand même&nbsp;».</p></div></details>
+        <details class="qa reveal"><summary>Quels outils sont compatibles&#8239;?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="qa-a"><p>Slack, Microsoft Teams, Gmail, Outlook, Google Agenda et le calendrier Outlook. Notion et Linear arrivent au premier trimestre 2027.</p></div></details>
+        <details class="qa reveal"><summary>Salam fonctionne sur mobile&#8239;?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="qa-a"><p>Oui, sur iOS 17 et Android 13 ou plus récents. Vos plages calmes et vos exceptions se synchronisent entre tous vos appareils.</p></div></details>
+        <details class="qa reveal"><summary>Combien coûte Salam après l’essai&#8239;?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="qa-a"><p>7,40&nbsp;€ par personne et par mois en facturation annuelle, ou 8,90&nbsp;€ sans engagement. L’essai de 14 jours donne accès à toutes les fonctions.</p></div></details>
+        <details class="qa reveal"><summary>Je dois donner une carte bancaire pour l’essai&#8239;?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="qa-a"><p>Non. Vous ajoutez un moyen de paiement seulement si vous décidez de continuer. Sans action de votre part, le compte passe en lecture seule à la fin de l’essai.</p></div></details>
+        <details class="qa reveal"><summary>Comment résilier mon abonnement&#8239;?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="qa-a"><p>Depuis Réglages, puis Abonnement, en deux clics. Si vous résiliez dans les 30 jours qui suivent votre premier paiement, nous vous remboursons intégralement.</p></div></details>
+        <details class="qa reveal"><summary>Où sont hébergées mes données&#8239;?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="qa-a"><p>En France, dans deux centres de données situés à Paris. Vous pouvez exporter ou supprimer votre compte à tout moment depuis vos réglages.</p></div></details>
+        <details class="qa reveal"><summary>Salam convient à une équipe entière&#8239;?<svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></summary><div class="qa-a"><p>Oui. Le forfait Équipe ajoute un tableau de bord du temps protégé par personne, sans jamais afficher le contenu des messages. Il démarre à 5 personnes.</p></div></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="essai" aria-labelledby="essai-title">
+    <div class="wrap">
+      <div class="cta reveal">
+        <h2 class="h2" id="essai-title">Récupérez vos deux heures dès demain matin</h2>
+        <p class="lead t-lg">Créez votre compte en 2 minutes. Votre première plage calme commence à votre prochain créneau libre.</p>
+        <form class="signup" novalidate data-signup>
+          <div class="field">
+            <label class="sr-only" for="email-final">Adresse mail professionnelle</label>
+            <input id="email-final" name="email" type="email" inputmode="email" autocomplete="email" placeholder="vous@entreprise.fr" required aria-describedby="email-final-msg">
+            <button class="btn" type="submit"><span class="btn-label">Essayer 14 jours gratuitement</span><span class="btn-skel" aria-hidden="true"></span></button>
+          </div>
+          <p class="form-msg t-sm" id="email-final-msg" aria-live="polite"></p>
+          <div class="form-done" hidden>
+            <span class="done-icon"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"/></svg></span>
+            <div><p data-done-text></p><button class="link-btn" type="button" data-reset>Utiliser une autre adresse</button></div>
+          </div>
+        </form>
+        <ul class="cta-list t-sm">
+          <li><svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"/></svg>14 jours gratuits, toutes les fonctions</li>
+          <li><svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"/></svg>Sans carte bancaire</li>
+          <li><svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"/></svg>Remboursé sous 30 jours</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <hr class="rule">
+    <div class="foot-top" style="margin-top:var(--s-700)">
+      <div class="foot-brand">
+        <a class="brand" href="#top" style="padding:0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13a7 7 0 0 1 14 0Z" fill="#E7C08F"/><rect x="3" y="15" width="18" height="2" rx="1" fill="currentColor"/><rect x="7" y="19" width="10" height="2" rx="1" fill="currentColor"/></svg>Salam</a>
+        <p class="t-sm muted">Des plages calmes pour les équipes qui travaillent sur écran.</p>
+      </div>
+      <nav class="foot-nav" aria-label="Pied de page">
+        <div>
+          <p class="label">Produit</p>
+          <ul><li><a href="#avantages">Avantages</a></li><li><a href="#fonctionnement">Fonctionnement</a></li><li><a href="#questions">Questions</a></li></ul>
+        </div>
+        <div>
+          <p class="label">Légal</p>
+          <ul><li><a href="legal.html#confidentialite">Confidentialité</a></li><li><a href="legal.html#conditions">Conditions d’utilisation</a></li></ul>
+        </div>
+        <div>
+          <p class="label">Contact</p>
+          <ul><li><span class="select">bonjour@salam.example</span></li></ul>
+        </div>
+      </nav>
+    </div>
+    <div class="foot-bottom t-xs faint">
+      <p>© 2026 Salam SAS, Lyon</p>
+      <p>Site de démonstration. Salam est une marque fictive et ce site ne collecte aucune donnée.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Scroll reveals */
+  const reveals = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    reveals.forEach(el => el.classList.add('is-in'));
+  } else {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    reveals.forEach(el => io.observe(el));
+  }
+
+  /* Island nav menu */
+  const burger = document.querySelector('.burger');
+  const menu = document.getElementById('menu');
+  const outside = [document.getElementById('contenu'), document.querySelector('.foot')];
+  const setMenu = (open, restoreFocus) => {
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+    menu.classList.toggle('is-open', open);
+    menu.inert = !open;
+    menu.setAttribute('aria-hidden', String(!open));
+    document.documentElement.classList.toggle('menu-open', open);
+    outside.forEach(el => { if (el) el.inert = open; });
+    if (open) setTimeout(() => menu.querySelector('a').focus({ preventScroll: true }), 120);
+    else if (restoreFocus) burger.focus();
+  };
+  burger.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true', true));
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false, false)));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.classList.contains('is-open')) setMenu(false, true); });
+  matchMedia('(min-width: 900px)').addEventListener('change', e => { if (e.matches) setMenu(false, false); });
+
+  /* Current section in the nav */
+  const navLinks = [...document.querySelectorAll('[data-nav] a')];
+  const spy = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      navLinks.forEach(a => {
+        if (a.getAttribute('href') === '#' + e.target.id) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  ['top', 'probleme', 'avantages', 'fonctionnement', 'avis', 'questions', 'essai'].forEach(id => {
+    const s = document.getElementById(id); if (s) spy.observe(s);
+  });
+
+  /* Live mockup: countdown and incoming notifications */
+  const timer = document.querySelector('[data-timer]');
+  const bar = document.querySelector('[data-progress]');
+  if (timer && bar) {
+    const total = +timer.dataset.total;
+    let left = +timer.dataset.left;
+    const pad = n => String(n).padStart(2, '0');
+    const tick = () => {
+      timer.textContent = pad(Math.floor(left / 60)) + ':' + pad(left % 60);
+      bar.style.transform = 'scaleX(' + (1 - left / total).toFixed(4) + ')';
+      left = left > 0 ? left - 1 : total;
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+  const rows = [...document.querySelectorAll('.q[data-count]')];
+  const totalEl = document.querySelector('[data-queue-total]');
+  if (rows.length && totalEl) {
+    setInterval(() => {
+      if (document.hidden) return;
+      const r = rows[Math.floor(Math.random() * rows.length)];
+      r.dataset.count = +r.dataset.count + 1;
+      r.querySelector('.n').textContent = r.dataset.count;
+      totalEl.textContent = +totalEl.textContent + 1;
+      if (!reduce) { r.classList.remove('bump'); void r.offsetWidth; r.classList.add('bump'); }
+    }, 4200);
+  }
+
+  /* Timeline: one day, 9 h to 18 h */
+  const pct = (h, m) => (((h * 60 + m) - 540) / 540 * 100).toFixed(3) + '%';
+  const span = (a, b) => ((b[0] * 60 + b[1]) - (a[0] * 60 + a[1])) / 540 * 100;
+  const mulberry = a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const rnd = mulberry(7);
+  const tickEl = (min, i) => '<span class="tick" style="left:' + ((min - 540) / 540 * 100).toFixed(3) + '%;--h:' + Math.round(45 + rnd() * 55) + '%;--i:' + i + '"></span>';
+  const block = (cls, a, b, text) => '<span class="blk ' + cls + '" style="left:' + pct(a[0], a[1]) + ';width:' + span(a, b).toFixed(3) + '%">' + text + '</span>';
+  const meetings = block('blk-meet', [9, 30], [9, 50], '') + block('blk-meet', [15, 30], [16, 15], '');
+  const before = document.querySelector('[data-track="before"]');
+  if (before) {
+    let html = meetings;
+    for (let i = 0; i < 63; i++) {
+      let w = (i + 0.5) * 465 / 63 + (rnd() - 0.5) * 5;
+      w = Math.max(1, Math.min(464, w));
+      html += tickEl(w < 195 ? 540 + w : 615 + w, i);
+    }
+    before.innerHTML = html;
+  }
+  const after = document.querySelector('[data-track="after"]');
+  if (after) {
+    const quiet = [[9,4],[9,11],[9,19],[9,53],[9,58],[11,47],[11,58],[12,6],[13,34],[13,41],[13,55],[14,8],[14,21],[16,22],[16,31],[16,47],[17,2],[17,18],[17,41],[17,55]];
+    let html = meetings
+      + block('blk-focus', [10, 5], [11, 40], '')
+      + block('blk-focus', [14, 30], [15, 25], '');
+    quiet.forEach((t, i) => { html += tickEl(t[0] * 60 + t[1], i * 3); });
+    html += '<span class="urg" style="left:' + pct(10, 59) + '"></span>';
+    html += '<span class="dig" style="left:' + pct(11, 40) + '"></span><span class="dig" style="left:' + pct(15, 25) + '"></span>';
+    after.innerHTML = html;
+  }
+
+  /* Tagline: words light up one at a time */
+  const tag = document.querySelector('[data-words]');
+  if (tag) {
+    tag.querySelectorAll('.line').forEach(line => {
+      const words = line.textContent.trim().split(/\s+/);
+      line.textContent = '';
+      words.forEach((w, i) => {
+        const s = document.createElement('span');
+        s.className = 'w';
+        s.textContent = w;
+        line.append(s);
+        if (i < words.length - 1) line.append(' ');
+      });
+    });
+    const words = [...tag.querySelectorAll('.w')];
+    if (reduce) {
+      words.forEach(w => w.classList.add('on'));
+    } else {
+      let queued = false, listening = false;
+      const update = () => {
+        queued = false;
+        const r = tag.getBoundingClientRect(), vh = innerHeight;
+        const p = (vh * 0.8 - r.top) / (r.height + vh * 0.35);
+        const n = Math.round(Math.min(Math.max(p, 0), 1) * words.length);
+        words.forEach((w, i) => w.classList.toggle('on', i < n));
+      };
+      const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+      new IntersectionObserver(([e]) => {
+        if (e.isIntersecting && !listening) { listening = true; addEventListener('scroll', onScroll, { passive: true }); update(); }
+        else if (!e.isIntersecting && listening) { listening = false; removeEventListener('scroll', onScroll); update(); }
+      }).observe(tag);
+    }
+  }
+
+  /* Signup forms: validation, loading, done */
+  const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  document.querySelectorAll('[data-signup]').forEach(form => {
+    const input = form.querySelector('input[type="email"]');
+    const btn = form.querySelector('button[type="submit"]');
+    const msg = form.querySelector('.form-msg');
+    const field = form.querySelector('.field');
+    const done = form.querySelector('.form-done');
+    const doneText = form.querySelector('[data-done-text]');
+    const hint = form.querySelector('.form-hint');
+    const showError = text => {
+      form.classList.add('has-error');
+      input.setAttribute('aria-invalid', 'true');
+      msg.textContent = text;
+      input.focus();
+    };
+    const clearError = () => {
+      form.classList.remove('has-error');
+      input.removeAttribute('aria-invalid');
+      msg.textContent = '';
+    };
+    input.addEventListener('input', () => { if (form.classList.contains('has-error') && emailOk(input.value.trim())) clearError(); });
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if (form.classList.contains('is-loading')) return;
+      const v = input.value.trim();
+      if (!v) return showError('Saisissez votre adresse mail professionnelle.');
+      if (!emailOk(v)) return showError('Cette adresse semble incomplète. Exemple : nadia@entreprise.fr');
+      clearError();
+      form.classList.add('is-loading');
+      form.setAttribute('aria-busy', 'true');
+      btn.disabled = true;
+      setTimeout(() => {
+        form.classList.remove('is-loading');
+        form.removeAttribute('aria-busy');
+        btn.disabled = false;
+        field.hidden = true;
+        if (hint) hint.hidden = true;
+        doneText.textContent = 'C’est noté. Ce site est une démo : aucun mail n’a été envoyé à ' + v + '.';
+        done.hidden = false;
+        done.querySelector('[data-reset]').focus();
+      }, 1100);
+    });
+    done.querySelector('[data-reset]').addEventListener('click', () => {
+      done.hidden = true;
+      field.hidden = false;
+      if (hint) hint.hidden = false;
+      input.value = '';
+      input.focus();
+    });
+  });
+})();
+</script>
+</body>
+</html>

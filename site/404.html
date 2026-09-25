@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Salam · Page introuvable</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#131209">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:"Geist";src:url("fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url("fonts/GeistMono-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+:root{color-scheme:dark;--bg:#131209;--text:#F2EDE4;--muted:#A7A196;--faint:#8A857B;--accent:#E7C08F;--accent-hover:#EFCFA6;--ink:#131209;--ease:cubic-bezier(.32,.72,0,1);--font:"Geist",ui-sans-serif,system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;display:grid;place-items:center;padding:24px;background:var(--bg);color:var(--text);font-family:var(--font);font-size:1rem;line-height:1.5rem;-webkit-font-smoothing:antialiased}
+main{display:grid;gap:24px;justify-items:start;max-width:560px}
+h1,p{margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mark{width:48px;height:48px}
+.code{font-family:var(--mono);font-size:.75rem;line-height:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+h1{font-size:2.25rem;line-height:2.5rem;font-weight:600;letter-spacing:-.03em;text-wrap:balance;background:linear-gradient(90deg,#FFFFFF,#9B9B9B);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:4px}
+@media (min-width:768px){h1{font-size:3rem;line-height:1}}
+p{color:var(--muted);text-wrap:pretty}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:var(--accent);color:var(--ink);font-weight:600;text-decoration:none;transition:background-color 400ms var(--ease),transform 400ms var(--ease)}
+.btn:hover{background:var(--accent-hover)}
+.btn:active{transform:scale(.98)}
+@media (prefers-reduced-motion:no-preference){
+  main > *{animation:rise 900ms var(--ease) both}
+  main > :nth-child(2){animation-delay:100ms}
+  main > :nth-child(3){animation-delay:200ms}
+  main > :nth-child(4){animation-delay:300ms}
+  main > :nth-child(5){animation-delay:400ms}
+}
+@keyframes rise{from{opacity:0;transform:translateY(64px);filter:blur(12px)}to{opacity:1;transform:none;filter:none}}
+</style>
+</head>
+<body>
+<main>
+  <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13a7 7 0 0 1 14 0Z" fill="#E7C08F"/><rect x="3" y="15" width="18" height="2" rx="1" fill="#F2EDE4"/><rect x="7" y="19" width="10" height="2" rx="1" fill="#F2EDE4"/></svg>
+  <p class="code">Erreur 404</p>
+  <h1>Cette page fait une pause</h1>
+  <p>L’adresse demandée n’existe pas ou a été déplacée. Tout le reste du site est bien là.</p>
+  <a class="btn" href="index.html">Retour à l’accueil</a>
+</main>
+</body>
+</html>
