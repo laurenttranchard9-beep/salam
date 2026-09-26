@@ -69,12 +69,12 @@ Bon à savoir :
 Connectez-vous au serveur en SSH, puis collez :
 
 ```bash
-curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- votre-domaine.fr
+curl -fsSL https://tinyurl.com/miam-install | sudo bash
 ```
 
 (le lien court mène à [install.sh](https://raw.githubusercontent.com/laurenttranchard9-beep/salam/claude/nice-maxwell-kmxeg2/install.sh), dans ce dépôt)
 
-Sans nom de domaine (`… | sudo bash`), le site reçoit une adresse automatique du type `http://miam.12-34-56-78.sslip.io`, pratique pour le montrer tout de suite.
+Le script demande si vous avez un nom de domaine pour ce site. Appuyez sur Entrée pour une adresse automatique du type `http://miam.12-34-56-78.sslip.io` (construite avec l'IP du serveur), pratique pour le montrer tout de suite. Vous pouvez aussi donner le domaine directement à la fin de la commande (`… | sudo bash -s -- miam.le-vrai-domaine.fr`) ; les noms d'exemple comme `votredomaine.fr` sont refusés. Pour revenir à l'adresse automatique : `… | sudo bash -s -- auto`.
 
 Ce que fait la commande (`install.sh`, à lire avant si vous voulez) :
 - repère Apache ou Nginx et PHP ; ajoute seulement ce qui manque (extensions `pdo` et `mbstring` de la même version de PHP), et refuse de changer la version de PHP de vos autres sites ;

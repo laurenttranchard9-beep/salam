@@ -11,7 +11,8 @@
 #  Installer          curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- mondomaine.fr
 #                     (le lien court mène à ce fichier, sur GitHub)
 #  Sans domaine       curl -fsSL https://tinyurl.com/miam-install | sudo bash
-#                     (adresse automatique du type http://miam.12-34-56-78.sslip.io)
+#                     (adresse automatique du type http://miam.12-34-56-78.sslip.io ;
+#                     « … | sudo bash -s -- auto » pour y revenir plus tard)
 #  Mettre à jour      la même commande : messages, statistiques, compte et
 #                     config.php sont gardés
 #  Désinstaller       curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- --desinstaller
@@ -43,6 +44,7 @@ usage() {
   cat <<'EOF'
 Installer          curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- mondomaine.fr
 Sans domaine       curl -fsSL https://tinyurl.com/miam-install | sudo bash
+Adresse auto       curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- auto
 Mettre à jour      la même commande
 Désinstaller       curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- --desinstaller
 Options            --sans-https   --email=vous@exemple.fr
@@ -137,6 +139,14 @@ probe() { # empreintes http et https d'un nom de site, en passant par ce serveur
     "$(fingerprint -H "Host: $1" http://127.0.0.1/)" \
     "$(fingerprint --resolve "$1:443:127.0.0.1" "https://$1/")"
 }
+own_names() { # noms servis par ce site, y compris une ancienne adresse
+  local f
+  for f in /etc/httpd/conf.d/$CONF.conf /etc/httpd/conf.d/$CONF-le-ssl.conf /etc/nginx/conf.d/$CONF.conf; do
+    [ -f "$f" ] || continue
+    sed -n 's/^[[:space:]]*\(ServerName\|ServerAlias\|server_name\)[[:space:]]\{1,\}\([^;]*\);\{0,1\}.*/\2/p' "$f" | tr ' ' '\n'
+  done
+  printf '%s\n%s\n' "${DOMAIN:-@}" "${ALIAS:-@}"
+}
 list_other_sites() { # noms déclarés dans la configuration, sauf ceux de ce site
   local names
   if [ "$SERVER" = apache ]; then
@@ -145,7 +155,7 @@ list_other_sites() { # noms déclarés dans la configuration, sauf ceux de ce si
     names=$(nginx -T 2>/dev/null | sed -n 's/^[[:space:]]*server_name[[:space:]]\{1,\}\([^;]*\);.*/\1/p' | tr ' ' '\n')
   fi
   { printf '%s\n' "$names"; printf '127.0.0.1\n'; [ -n "${PUBLIC_IP:-}" ] && printf '%s\n' "$PUBLIC_IP"; } \
-    | grep -Ev '^$|^_$|^~|\*|^is$' | grep -Fxv -e "${DOMAIN:-@}" -e "${ALIAS:-@}" | sort -u | head -n 40
+    | grep -Ev '^$|^_$|^~|\*|^is$' | grep -Fxv -f <(own_names | grep -v '^$') | sort -u | head -n 40
 }
 snapshot() { # snapshot fichier : l'état de chaque autre site
   local n
@@ -379,16 +389,36 @@ setup_php() {
   ok "PHP $(php -r 'echo PHP_VERSION;') avec SQLite · compte $PHP_USER"
 }
 
+clean_domain() { # « https://Miam.Exemple.fr/ » → « miam.exemple.fr »
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's#^[a-z]+://##; s#/.*$##; s#:[0-9]+$##; s#\.$##; s#^[[:space:]]+|[[:space:]]+$##g'
+}
+is_example_domain() { # les noms d'exemple de la notice (votredomaine.fr…), recopiés tels quels
+  [[ $1 =~ (^|\.)(votre-?domaine|mon-?domaine|votre-?site|mon-?site|domaine|exemple|example)\.(fr|com|net|org)$ ]]
+}
 choose_domain() {
-  local previous
+  local previous force_auto=0
   previous=$(current_domain)
-  if [ -z "$DOMAIN" ] && [ -n "$previous" ]; then DOMAIN=$previous; fi
-  if [ -z "$DOMAIN" ] && has_tty; then
-    printf '\n' >/dev/tty
-    ask "Nom de domaine du site (ex. miam.mondomaine.fr), ou Entrée pour une adresse automatique :" ''
-    DOMAIN=$REPLY
+  if [ "$DOMAIN" = auto ]; then DOMAIN=''; force_auto=1; fi
+  DOMAIN=$(clean_domain "$DOMAIN")
+  if [ -n "$DOMAIN" ] && is_example_domain "$DOMAIN"; then
+    warn "« $DOMAIN » est l'exemple de la notice, pas votre adresse : je ne l'utilise pas."
+    DOMAIN=''
   fi
-  DOMAIN=$(printf '%s' "$DOMAIN" | tr '[:upper:]' '[:lower:]' | sed -E 's#^[a-z]+://##; s#/.*$##; s#:[0-9]+$##; s#\.$##')
+  if [ -n "$previous" ] && is_example_domain "$previous"; then
+    info "L'adresse enregistrée (« $previous ») est l'exemple de la notice : elle va être remplacée."
+  elif [ -z "$DOMAIN" ] && [ "$force_auto" = 0 ] && [ -n "$previous" ]; then
+    DOMAIN=$previous
+  fi
+  if [ -z "$DOMAIN" ] && [ "$force_auto" = 0 ] && has_tty; then
+    printf '\n' >/dev/tty
+    info "Si vous avez un nom de domaine pour ce site (et qu'il pointe vers ce serveur), tapez-le."
+    ask "Sinon, appuyez sur Entrée pour une adresse automatique :" ''
+    DOMAIN=$(clean_domain "$REPLY")
+    if [ -n "$DOMAIN" ] && is_example_domain "$DOMAIN"; then
+      warn "« $DOMAIN » est un exemple : adresse automatique à la place."
+      DOMAIN=''
+    fi
+  fi
   if [ -z "$DOMAIN" ]; then
     [ -n "$PUBLIC_IP" ] || die "Impossible de trouver l'adresse IP publique du serveur : indiquez un nom de domaine."
     DOMAIN="miam.${PUBLIC_IP//./-}.sslip.io"
@@ -396,7 +426,7 @@ choose_domain() {
   fi
   [[ $DOMAIN =~ ^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$ ]] || die "Nom de domaine invalide : $DOMAIN"
   ALIAS=''
-  # Domaine « nu » (mondomaine.fr) : on ajoute www.mondomaine.fr s'il pointe aussi ici
+  # Domaine « nu » (ex. lemonorom.fr) : on ajoute la version www s'il pointe aussi ici
   if [ "$AUTO_DOMAIN" = 0 ] && [ "$(tr -cd '.' <<<"$DOMAIN" | wc -c)" -eq 1 ] && [ -n "$PUBLIC_IP" ] && [ "$(resolve "www.$DOMAIN")" = "$PUBLIC_IP" ]; then
     ALIAS="www.$DOMAIN"
   fi
