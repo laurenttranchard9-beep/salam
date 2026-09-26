@@ -1,14 +1,19 @@
-<?php
-/** @var array $page */
-$home = !empty($page['isHome']) ? '' : url('');
-?>
+<?php /** @var array $page */ ?>
 <footer class="footer">
   <div class="wrap">
     <div class="footer__top">
       <p class="footer__cta">Votre carte mérite mieux qu'un PDF.</p>
-      <a class="pill pill--white" href="<?= h($home) ?>#contact" data-track="cta" data-label="footer-devis">Demander un devis <svg aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+      <a class="pill pill--white" href="<?= h(url('contact')) ?>" data-magnetic data-track="cta" data-label="footer-devis">Demander un devis <svg aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
     </div>
-    <p class="footer__word" aria-hidden="true"><?= h(mb_strtolower(site_name())) ?></p>
+    <p class="footer__word" aria-hidden="true" data-footer-word><?= h(mb_strtolower(site_name())) ?></p>
+    <nav class="footer__pages" aria-label="Pages du site">
+      <a href="<?= h(url('')) ?>">Accueil</a>
+      <a href="<?= h(url('formules')) ?>">Formules</a>
+      <a href="<?= h(url('demo')) ?>">La démo</a>
+      <a href="<?= h(url('realisations')) ?>">Réalisations</a>
+      <a href="<?= h(url('methode')) ?>">Méthode</a>
+      <a href="<?= h(url('contact')) ?>">Contact</a>
+    </nav>
     <div class="footer__bottom">
       <p>© <?= date('Y') ?> <?= h(site_name()) ?> · Sites et cartes en ligne pour restaurants, par <?= h((string) config('owner_name')) ?></p>
       <nav aria-label="Informations">

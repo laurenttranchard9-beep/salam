@@ -48,6 +48,7 @@ function offers(): array
             'pitch' => 'Carte, formules, horaires et accès : tout votre restaurant au même endroit.',
             'description' => "Un site à votre image, pensé d'abord pour le téléphone : on vous trouve, on voit tout de suite si vous êtes ouvert, on vous appelle en un geste. Pour la vente à emporter, vos clients notent leurs plats dans « Ma liste » avant de téléphoner.",
             'features' => [
+                'Tout ce que contient Carte + Gestion',
                 "Page d'accueil à l'image du restaurant",
                 'Ouvert ou fermé, affiché en direct selon vos horaires',
                 'Bouton « Appeler » et adresse en un geste',
@@ -73,6 +74,28 @@ function offers(): array
             'colors' => ['#7be3b5', '#1f9d6f', '#1c1410'],
             'shot' => null,
         ],
+    ];
+}
+
+/**
+ * Tableau comparatif de la page Formules : [libellé, carte, gestion, site].
+ * La formule Sur mesure se compose à la demande.
+ */
+function offer_comparison(): array
+{
+    return [
+        ['Carte complète, rangée par catégories', true, true, true],
+        ['Recherche de plat et filtres (végé, épicé…)', true, true, true],
+        ['QR code prêt à imprimer pour vos tables', true, true, true],
+        ['Allergènes et mentions obligatoires', true, true, true],
+        ['Mise en ligne sur votre nom de domaine', true, true, true],
+        ['Espace gestion : plats, prix, catégories, stocks', false, true, true],
+        ['Statistiques de consultation', false, true, true],
+        ["Page d'accueil à l'image du restaurant", false, false, true],
+        ['Ouvert ou fermé, affiché en direct', false, false, true],
+        ['Bouton « Appeler » et adresse en un geste', false, false, true],
+        ['« Ma liste » pour la vente à emporter', false, false, true],
+        ['Fiche restaurant lisible par Google', false, false, true],
     ];
 }
 

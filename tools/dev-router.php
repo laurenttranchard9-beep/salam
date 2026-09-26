@@ -25,6 +25,11 @@ if (preg_match('~^/(includes|data)(/|$)|^/config\.php$|/\.~', $path)) {
 }
 
 $routes = [
+    '/formules' => ['formules.php', []],
+    '/demo' => ['demo.php', []],
+    '/realisations' => ['realisations.php', []],
+    '/methode' => ['methode.php', []],
+    '/contact' => ['contact.php', []],
     '/mentions-legales' => ['legal.php', ['page' => 'mentions']],
     '/confidentialite' => ['legal.php', ['page' => 'confidentialite']],
     '/robots.txt' => ['robots.php', []],

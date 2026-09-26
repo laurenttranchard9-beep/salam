@@ -19,10 +19,21 @@
   /* ---------- Barre du haut ---------- */
   const topbar = document.querySelector('[data-topbar]');
   const hero = document.querySelector('[data-hero]');
+  const pageHero = document.querySelector('[data-page-hero], .demo--page, .contact--page, .not-found');
+  let lastScroll = window.scrollY;
   const updateTopbar = () => {
-    const limit = hero ? hero.offsetHeight - 110 : 40;
-    topbar?.classList.toggle('is-scrolled', window.scrollY > limit);
+    const y = window.scrollY;
+    const top = hero || pageHero;
+    const limit = top ? top.offsetHeight - 110 : 40;
+    topbar?.classList.toggle('is-scrolled', y > limit);
+    // Se cache quand on descend, revient dès qu'on remonte
+    const goingDown = y > lastScroll + 4;
+    const goingUp = y < lastScroll - 4;
+    if (goingDown && y > 300 && !topbar?.contains(document.activeElement)) topbar?.classList.add('is-hidden');
+    else if (goingUp || y <= 300) topbar?.classList.remove('is-hidden');
+    lastScroll = y;
   };
+  topbar?.addEventListener('focusin', () => topbar.classList.remove('is-hidden'));
   updateTopbar();
   addEventListener('scroll', updateTopbar, { passive: true });
   addEventListener('resize', updateTopbar, { passive: true });
@@ -33,6 +44,7 @@
     dialog.classList.remove('is-closing');
     dialog.showModal();
     root.classList.add('has-dialog');
+    window.lenis?.stop();
   }
   function closeDialog(dialog, then) {
     if (!dialog.open) { then?.(); return; }
@@ -40,6 +52,7 @@
       dialog.classList.remove('is-closing');
       dialog.close();
       root.classList.remove('has-dialog');
+      window.lenis?.start();
       then?.();
     };
     if (reduceMotion) { finish(); return; }
@@ -97,14 +110,14 @@
         reveal.unobserve(entry.target);
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    document.querySelectorAll('[data-reveal]').forEach((el) => reveal.observe(el));
+    document.querySelectorAll('[data-reveal], [data-words-in]').forEach((el) => reveal.observe(el));
 
     const play = new IntersectionObserver((entries) => {
       entries.forEach((entry) => entry.target.classList.toggle('is-playing', entry.isIntersecting));
     }, { threshold: 0.2 });
     document.querySelectorAll('.project').forEach((el) => play.observe(el));
   } else {
-    document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-in'));
+    document.querySelectorAll('[data-reveal], [data-words-in]').forEach((el) => el.classList.add('is-in'));
   }
 
   /* ---------- La gamme : fiches détaillées ---------- */
@@ -126,8 +139,9 @@
   document.querySelectorAll('[data-sheet-close]').forEach((b) => b.addEventListener('click', () => closeDialog(b.closest('dialog'))));
   document.querySelectorAll('[data-choose-offer]').forEach((link) => {
     link.addEventListener('click', (e) => {
-      e.preventDefault();
       const form = document.querySelector('[data-contact-form]');
+      if (!form) return; // le lien mène à la page Contact, formule présélectionnée
+      e.preventDefault();
       const radio = form?.querySelector(`input[name="offer"][value="${link.dataset.chooseOffer}"]`);
       if (radio) radio.checked = true;
       closeDialog(link.closest('dialog'), () => {
@@ -136,6 +150,12 @@
       });
     });
   });
+
+  const fromHash = location.hash.match(/^#offre-([a-z\-]+)$/);
+  if (fromHash) {
+    const button = document.querySelector(`[data-offer-open="${fromHash[1]}"]`);
+    if (button) setTimeout(() => button.click(), reduceMotion ? 0 : 450);
+  }
 
   /* ---------- FAQ ---------- */
   document.querySelectorAll('details[data-track-open]').forEach((d) => {

@@ -28,8 +28,10 @@ $canonical = absolute_url($page['path'] ?? '');
 <link rel="preload" href="<?= h(url('assets/fonts/bricolage-grotesque.woff2')) ?>" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="<?= h(url('assets/fonts/unbounded.woff2')) ?>" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<?= h(asset('css/site.css')) ?>">
-<script src="<?= h(asset('js/consent.js')) ?>" defer></script>
-<?php foreach ($page['scripts'] ?? [] as $script): ?>
+<?php
+// Ordre important (scripts « defer ») : mesure d'audience, défilement doux, GSAP si la page en a besoin, puis le site
+$scripts = array_merge(['js/consent.js', 'js/vendor/lenis.min.js'], $page['vendor'] ?? [], ['js/motion.js', 'js/site.js'], $page['scripts'] ?? []);
+foreach ($scripts as $script): ?>
 <script src="<?= h(asset($script)) ?>" defer></script>
 <?php endforeach; ?>
 <?php if (!empty($page['jsonld'])): ?>

@@ -18,12 +18,12 @@ $reply = static function (int $status, array $data, string $query) use ($wantsJs
     if ($wantsJson) {
         json_response($data, $status);
     }
-    header('Location: ' . url('') . $query . '#contact', true, 303);
+    header('Location: ' . url('contact') . $query . '#formulaire', true, 303);
     exit;
 };
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
-    header('Location: ' . url('') . '#contact', true, 303);
+    header('Location: ' . url('contact'), true, 303);
     exit;
 }
 

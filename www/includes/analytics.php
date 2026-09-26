@@ -123,6 +123,11 @@ function page_label(string $path): string
 {
     return [
         '/' => 'Accueil',
+        '/formules' => 'Formules',
+        '/demo' => 'La démo',
+        '/realisations' => 'Réalisations',
+        '/methode' => 'Méthode',
+        '/contact' => 'Contact',
         '/mentions-legales' => 'Mentions légales',
         '/confidentialite' => 'Confidentialité',
     ][$path] ?? $path;

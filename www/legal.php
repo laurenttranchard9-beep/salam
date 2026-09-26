@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/includes/bootstrap.php';
+require __DIR__ . '/includes/page-setup.php';
 
 $which = ($_GET['page'] ?? '') === 'confidentialite' ? 'confidentialite' : 'mentions';
 
@@ -22,10 +23,8 @@ require __DIR__ . '/includes/partials/head.php';
 require __DIR__ . '/includes/partials/header.php';
 ?>
 <main id="contenu">
-  <header class="page-hero">
-    <h1><?= h($page['heading']) ?></h1>
-    <p><?= h($page['intro']) ?></p>
-  </header>
+  <?php $hero = ['kicker' => 'Informations', 'title' => $page['heading'], 'lead' => $page['intro'], 'theme' => 'ink', 'word' => $page['heading'], 'compact' => true];
+  require __DIR__ . '/includes/partials/page-hero.php'; ?>
 
   <article class="prose">
   <?php if ($which === 'mentions'): ?>

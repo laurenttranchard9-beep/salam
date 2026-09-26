@@ -6,12 +6,12 @@ Le dossier à mettre en ligne est **`www/`**. Le dossier `site/` contient une an
 
 ## Ce qu'il contient
 
-**La vitrine** (`www/index.php`)
-- Hero façon Ciao : dégradé plein écran, vos deux réalisations dans des téléphones inclinés qui flottent et suivent la souris.
-- Rubans défilants, puis **la gamme** : quatre formules présentées comme des bouteilles. Chacune s'ouvre en fiche plein écran avec son prix et un bouton qui présélectionne la formule dans le formulaire.
-- **Une démo interactive** : six cuisines (pizzeria, sushi, grill…), une carte dans un téléphone avec recherche, filtres et « Ma liste », un mode « Côté gestion » où l'on change un prix ou coupe un plat, et un aperçu des statistiques.
-- **Les réalisations** : Aux Saveurs Braisées et La Fleur d'Or, avec des captures réelles (ordinateur et téléphone qui défile).
-- La méthode en quatre étapes, une FAQ, le **formulaire de contact**, les mentions légales et la page confidentialité.
+**La vitrine**, en plusieurs pages reliées par une transition douce (le nouvel écran monte comme un rideau) :
+- **Accueil** (`/`) : une histoire qui se déroule à la molette. Les deux téléphones de vos réalisations s'écartent, puis la vraie carte d'Aux Saveurs Braisées défile dans un téléphone pendant que cinq points forts s'allument, un texte se révèle mot à mot, les quatre formules passent à l'horizontale en changeant la couleur du fond, les étapes s'empilent comme des cartes, et les réalisations bougent en parallaxe.
+- **Formules** (`/formules`) : les quatre formules en « bouteilles » qui s'ouvrent en fiche plein écran, et un tableau comparatif avec un bouton « Choisir » qui présélectionne la formule dans le formulaire.
+- **La démo** (`/demo`) : six cuisines dans un téléphone, avec recherche, filtres, « Ma liste », un mode gestion et un aperçu des statistiques.
+- **Réalisations** (`/realisations`), **Méthode** (`/methode`, étapes et questions fréquentes) et **Contact** (`/contact`).
+- Défilement doux à la molette, titres qui montent mot à mot, boutons « magnétiques », bandeau final qui accélère quand on défile. Tout se coupe si le visiteur a demandé à réduire les animations.
 
 **Les cookies et les statistiques**
 - Bandeau « Un petit cookie ? » avec Accepter et Refuser à égalité, choix gardé 6 mois, bouton « Gérer les cookies » en pied de page.
@@ -100,7 +100,8 @@ Ne lancez jamais ce script en ligne. Pour repartir de zéro, supprimez `www/data
 | Quoi | Où |
 |---|---|
 | Nom de la marque, email, mentions légales | `www/config.php` |
-| Formules, démo, réalisations, étapes, FAQ | `www/includes/content.php` |
+| Formules, démo, réalisations, étapes, FAQ, tableau comparatif | `www/includes/content.php` |
+| Scènes animées de l'accueil | `www/index.php` et `www/assets/js/home.js` |
 | Téléphone, email affiché, zone, tarifs | Espace gestion > Réglages |
 | Couleurs, typographie, mise en page | `www/assets/css/site.css` |
 | Image de partage (réseaux sociaux) | `www/assets/img/og.jpg` (1200 × 630, contient le logo « miam ») |
@@ -118,7 +119,9 @@ Le nom « Miam » est une proposition : changez `site_name` dans `config.php`, l
 
 ```
 www/
-  index.php, legal.php, 404.php   pages publiques
+  index.php                       accueil (scènes au défilement)
+  formules.php, demo.php, realisations.php, methode.php, contact.php
+  legal.php, 404.php              mentions, confidentialité, page introuvable
   admin/index.php                 espace gestion
   api/contact.php, api/track.php  formulaire et mesure d'audience
   includes/                       code PHP (bloqué par .htaccess)
@@ -130,4 +133,4 @@ tools/
   seed-demo.php                   données fictives pour essayer
 ```
 
-Polices Bricolage Grotesque et Unbounded sous licence SIL Open Font License, hébergées avec le site.
+Polices Bricolage Grotesque et Unbounded sous licence SIL Open Font License, hébergées avec le site. Animations : GSAP et ScrollTrigger (licence standard GSAP, gratuite) et Lenis (licence MIT), également hébergés avec le site dans `assets/js/vendor/`.

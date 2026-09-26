@@ -149,7 +149,7 @@ function stat_funnel(string $from, string $to): array
     $people = static fn (string $where): int => (int) stat_value("SELECT COUNT(DISTINCT visitor) FROM events WHERE day BETWEEN ? AND ? AND $where", $range);
     return [
         ['label' => 'Visiteurs uniques', 'n' => (int) stat_value('SELECT COUNT(DISTINCT visitor) FROM views WHERE day BETWEEN ? AND ?', $range)],
-        ['label' => 'Ont ouvert une formule', 'n' => $people("name = 'offre'")],
+        ['label' => 'Ont regardé une formule', 'n' => $people("name IN ('offre', 'offre-accueil')")],
         ['label' => 'Ont commencé le formulaire', 'n' => $people("name = 'formulaire' AND label = 'debut'")],
         ['label' => 'Ont envoyé une demande', 'n' => $people("name = 'formulaire' AND label = 'envoye'")],
     ];

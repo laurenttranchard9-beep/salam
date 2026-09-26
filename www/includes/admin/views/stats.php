@@ -19,15 +19,18 @@ $campaigns = stat_breakdown('views', 'utm_campaign', $from, $to, 6);
 $heat = stat_heatmap($from, $to);
 $funnel = stat_funnel($from, $to);
 
-$events = stat_events($from, $to, ['offre', 'offre-choisie', 'demo-cuisine', 'faq', 'cta', 'tel', 'mail', 'realisation']);
+$events = stat_events($from, $to, ['offre', 'offre-accueil', 'offre-choisie', 'demo-cuisine', 'faq', 'cta', 'tel', 'mail', 'realisation']);
 $group = static function (array $names) use ($events): array {
     $rows = [];
     foreach ($events as $e) {
         if (in_array($e['name'], $names, true)) {
-            $key = $e['name'] . '|' . $e['label'];
-            $rows[$key] = ['label' => $key, 'n' => (int) $e['n']];
+            // Une formule ouverte depuis l'accueil ou depuis la page Formules compte pour la même formule
+            $name = $e['name'] === 'offre-accueil' ? 'offre' : $e['name'];
+            $key = $name . '|' . $e['label'];
+            $rows[$key] = ['label' => $key, 'n' => ($rows[$key]['n'] ?? 0) + (int) $e['n']];
         }
     }
+    usort($rows, static fn (array $a, array $b): int => $b['n'] <=> $a['n']);
     return array_values($rows);
 };
 $offers = offers();
@@ -36,7 +39,7 @@ $faqItems = faq();
 $ctaNames = [
     'cta|hero-gamme' => 'Accueil : « Voir la gamme »', 'cta|header-contact' => 'En-tête : « Contactez-moi »',
     'cta|menu-devis' => 'Menu : « Demander un devis »', 'cta|footer-devis' => 'Pied de page : « Demander un devis »',
-    'cta|faq-contact' => 'FAQ : « Poser ma question »', 'realisation|hero-asb' => 'Accueil : téléphone Aux Saveurs Braisées',
+    'cta|faq-contact' => 'FAQ : « Poser ma question »', 'cta|bandeau-devis' => 'Bandeau : « Demander un devis »', 'realisation|hero-asb' => 'Accueil : téléphone Aux Saveurs Braisées',
     'realisation|hero-fdo' => "Accueil : téléphone La Fleur d'Or", 'realisation|asb-visite' => 'Visite du site Aux Saveurs Braisées',
     'realisation|fdo-visite' => "Visite du site La Fleur d'Or",
 ];
@@ -158,8 +161,8 @@ $funnelTop = max(1, $funnel[0]['n']);
     <?php endif; ?>
   </section>
   <section class="card">
-    <header class="card__head"><h2 class="card__title">Formules consultées *</h2><p class="card__hint">Fiches ouvertes dans « La gamme »</p></header>
-    <?= bar_list($group(['offre']), 'ouvertures', $eventLabel) ?>
+    <header class="card__head"><h2 class="card__title">Formules consultées *</h2><p class="card__hint">Depuis l'accueil ou la page Formules</p></header>
+    <?= bar_list($group(['offre', 'offre-accueil']), 'ouvertures', $eventLabel) ?>
   </section>
 </div>
 
