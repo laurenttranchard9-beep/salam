@@ -19,7 +19,7 @@ $campaigns = stat_breakdown('views', 'utm_campaign', $from, $to, 6);
 $heat = stat_heatmap($from, $to);
 $funnel = stat_funnel($from, $to);
 
-$events = stat_events($from, $to, ['offre', 'offre-accueil', 'offre-choisie', 'demo-cuisine', 'faq', 'cta', 'tel', 'mail', 'realisation']);
+$events = stat_events($from, $to, ['offre', 'offre-accueil', 'offre-choisie', 'demo-cuisine', 'faq', 'cta', 'tel', 'mail', 'realisation', 'menu-imprime']);
 $group = static function (array $names) use ($events): array {
     $rows = [];
     foreach ($events as $e) {
@@ -42,7 +42,11 @@ $ctaNames = [
     'cta|faq-contact' => 'FAQ : « Poser ma question »', 'cta|bandeau-devis' => 'Bandeau : « Demander un devis »', 'realisation|hero-asb' => 'Accueil : téléphone Aux Saveurs Braisées',
     'realisation|hero-fdo' => "Accueil : téléphone La Fleur d'Or", 'realisation|asb-visite' => 'Visite du site Aux Saveurs Braisées',
     'realisation|fdo-visite' => "Visite du site La Fleur d'Or",
+    'cta|accueil-menus' => 'Accueil : « Voir les cartes imprimées »', 'cta|realisations-menus' => 'Réalisations : « Voir les cartes imprimées »',
 ];
+foreach (print_menus() as $printMenu) {
+    $ctaNames['menu-imprime|' . $printMenu['key']] = 'Carte imprimée agrandie : ' . $printMenu['restaurant'] . ' (' . $printMenu['style'] . ')';
+}
 $eventLabel = static function (string $key) use ($offers, $cuisines, $faqItems, $ctaNames): string {
     [$name, $label] = explode('|', $key, 2) + ['', ''];
     return match ($name) {
@@ -177,7 +181,7 @@ $funnelTop = max(1, $funnel[0]['n']);
   </section>
   <section class="card">
     <header class="card__head"><h2 class="card__title">Boutons cliqués *</h2></header>
-    <?= bar_list($group(['cta', 'realisation', 'tel', 'mail', 'offre-choisie']), 'clics', static fn (string $k): string => str_starts_with($k, 'offre-choisie|') ? 'Formule choisie : ' . $eventLabel($k) : $eventLabel($k)) ?>
+    <?= bar_list($group(['cta', 'realisation', 'menu-imprime', 'tel', 'mail', 'offre-choisie']), 'clics', static fn (string $k): string => str_starts_with($k, 'offre-choisie|') ? 'Formule choisie : ' . $eventLabel($k) : $eventLabel($k)) ?>
   </section>
 </div>
 

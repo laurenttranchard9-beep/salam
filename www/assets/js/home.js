@@ -1,7 +1,8 @@
 /*
  * Accueil : les scènes pilotées par la molette.
  * 1. le hero s'écarte, 2. la carte défile dans le téléphone, 3. le texte se révèle mot à mot,
- * 4. la gamme passe à l'horizontale, 5. les étapes s'empilent, 6. les réalisations en parallaxe.
+ * 4. la gamme passe à l'horizontale, 5. les étapes s'empilent, 6. les réalisations en parallaxe,
+ * 7. les couvertures des menus imprimés s'ouvrent en éventail.
  * En mode doux (appareil réglé sur « moins d'animations »), seules les scènes que la molette
  * pilote directement sont gardées (2, 3, 4) ; les effets décoratifs sont coupés.
  * Sans GSAP, la page reste complète et lisible, sans scène.
@@ -173,6 +174,19 @@
       scrollTrigger: { trigger: img.closest('.showcase__card'), start: 'top bottom', end: 'bottom top', scrub: true },
     });
   });
+
+  /* ---------- 7. Les menus imprimés : les couvertures s'ouvrent en éventail ---------- */
+  const covers = calm ? [] : gsap.utils.toArray('[data-cover]');
+  if (covers.length) {
+    gsap.from(covers, {
+      '--x': '0%',
+      '--r': (i) => ['-3deg', '0deg', '3deg'][i] || '0deg',
+      yPercent: 12,
+      ease: 'none',
+      stagger: 0.04,
+      scrollTrigger: { trigger: '[data-covers]', start: 'top 92%', end: 'center 55%', scrub: 0.6 },
+    });
+  }
 
   // Les positions dépendent des polices et des images : on recalcule une fois tout chargé
   document.fonts?.ready.then(() => ScrollTrigger.refresh());

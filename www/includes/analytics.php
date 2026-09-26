@@ -126,6 +126,7 @@ function page_label(string $path): string
         '/formules' => 'Formules',
         '/demo' => 'La démo',
         '/realisations' => 'Réalisations',
+        '/menus' => 'Menus imprimés',
         '/methode' => 'Méthode',
         '/contact' => 'Contact',
         '/mentions-legales' => 'Mentions légales',

@@ -124,6 +124,7 @@ function contact_options(): array
         'traduction' => 'Carte traduite',
         'emporter' => 'Vente à emporter',
         'photos' => 'Photos des plats',
+        'imprime' => 'Carte imprimée',
     ];
 }
 
@@ -165,6 +166,74 @@ function projects(): array
             'mobile' => 'fdo-mobile-long.webp',
             'colors' => ['#b5412c', '#f4b93a'],
         ],
+    ];
+}
+
+/**
+ * Les cartes imprimées (créations réelles, A3 plié en trois volets).
+ * Images dans assets/img/menus : {key}-exterieur.webp, {key}-interieur.webp (et -zoom pour l'agrandissement).
+ */
+function print_menus(): array
+{
+    return [
+        [
+            'key' => 'asb',
+            'restaurant' => 'Aux Saveurs Braisées',
+            'style' => 'Braise',
+            'look' => 'Fond crème, titres à empattements, prix couleur braise.',
+            'points' => [
+                'Couverture sombre et flamme, comme le site',
+                "Formules, plats à la braise et desserts à l'intérieur",
+                'Vins, apéritifs et boissons au dos',
+            ],
+            'colors' => ['#1d1512', '#f08a3c'],
+        ],
+        [
+            'key' => 'fdo-bistrot',
+            'restaurant' => "La Fleur d'Or",
+            'style' => 'Bistrot',
+            'look' => 'Mur de briques en couverture, bandeaux rouges : une carte chaleureuse.',
+            'points' => [
+                'Formules du midi et du soir en couverture',
+                'Cuisine chinoise, thaï et bar à sushis bien séparés',
+                'Plus de 180 plats, lisibles d\'un coup d\'œil',
+            ],
+            'colors' => ['#b5412c', '#f4b93a'],
+        ],
+        [
+            'key' => 'fdo-ardoise',
+            'restaurant' => "La Fleur d'Or",
+            'style' => 'Ardoise',
+            'look' => 'La même carte en noir ardoise : plus sobre, plus graphique.',
+            'points' => [
+                'Même contenu, autre ambiance',
+                'Bandeaux noirs et touches dorées',
+                'Idéale pour comparer deux styles avant de choisir',
+            ],
+            'colors' => ['#1f1b1a', '#e4b24a'],
+        ],
+    ];
+}
+
+/** Le dépliant d'Aux Saveurs Braisées, raconté au défilement. */
+function fold_notes(): array
+{
+    return [
+        ['Fermée', "La couverture donne le ton : le nom, la cuisine, l'ambiance."],
+        ['On ouvre', "Les formules d'un côté, les vins de l'autre."],
+        ['Grande ouverte', "Toute la carte d'un seul regard, rangée comme on mange."],
+        ['Au dos', 'Apéritifs, bières, sans alcool et les mentions utiles.'],
+    ];
+}
+
+/** Comment se passe une carte imprimée. */
+function print_steps(): array
+{
+    return [
+        ['title' => 'Vous envoyez la carte', 'text' => "Votre carte actuelle, un fichier, ou même une photo de l'ardoise.", 'color' => '#ffd84d'],
+        ['title' => 'Je la mets en page', 'text' => 'À vos couleurs : style bistrot, ardoise, plus chic… Je peux vous proposer deux versions.', 'color' => '#ff9f6b'],
+        ['title' => 'On relit ensemble', 'text' => "Vous vérifiez les noms et les prix, je corrige jusqu'à ce que tout soit juste.", 'color' => '#c49bff'],
+        ['title' => 'Prête à imprimer', 'text' => 'Vous recevez un PDF haute définition, à confier à votre imprimeur.', 'color' => '#7fd6a8'],
     ];
 }
 

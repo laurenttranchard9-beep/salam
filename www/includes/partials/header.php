@@ -7,6 +7,7 @@ $pages = [
     'formules' => 'Formules',
     'demo' => 'La démo',
     'realisations' => 'Réalisations',
+    'menus' => 'Menus imprimés',
     'methode' => 'Méthode',
 ];
 $menu = ['accueil' => ['Accueil', '']] + array_map(static fn (string $label): array => [$label, ''], $pages) + ['contact' => ['Contact', '']];

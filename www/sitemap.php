@@ -9,6 +9,7 @@ $pages = [
     ['formules', filemtime(__DIR__ . '/formules.php'), '0.9'],
     ['demo', filemtime(__DIR__ . '/demo.php'), '0.7'],
     ['realisations', filemtime(__DIR__ . '/realisations.php'), '0.8'],
+    ['menus', filemtime(__DIR__ . '/menus.php'), '0.7'],
     ['methode', filemtime(__DIR__ . '/methode.php'), '0.7'],
     ['contact', filemtime(__DIR__ . '/contact.php'), '0.9'],
     ['mentions-legales', filemtime(__DIR__ . '/legal.php'), '0.2'],

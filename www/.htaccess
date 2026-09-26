@@ -25,7 +25,7 @@ Options -Indexes
     # Dossiers internes : jamais accessibles depuis le web
     RewriteRule ^(includes|data)(/|$) - [F,L]
 
-    RewriteRule ^(formules|demo|realisations|methode|contact)/?$ $1.php [L,QSA]
+    RewriteRule ^(formules|demo|realisations|menus|methode|contact)/?$ $1.php [L,QSA]
     RewriteRule ^mentions-legales/?$ legal.php?page=mentions [L,QSA]
     RewriteRule ^confidentialite/?$ legal.php?page=confidentialite [L,QSA]
     RewriteRule ^robots\.txt$ robots.php [L]

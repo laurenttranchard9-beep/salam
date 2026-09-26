@@ -10,8 +10,9 @@ Le dossier à mettre en ligne est **`www/`**. Le dossier `site/` contient une an
 - **Accueil** (`/`) : une histoire qui se déroule à la molette. Les deux téléphones de vos réalisations s'écartent, puis la vraie carte d'Aux Saveurs Braisées défile dans un téléphone pendant que cinq points forts s'allument, un texte se révèle mot à mot, les quatre formules passent à l'horizontale en changeant la couleur du fond, les étapes s'empilent comme des cartes, et les réalisations bougent en parallaxe.
 - **Formules** (`/formules`) : les quatre formules en « bouteilles » qui s'ouvrent en fiche plein écran, et un tableau comparatif avec un bouton « Choisir » qui présélectionne la formule dans le formulaire.
 - **La démo** (`/demo`) : six cuisines dans un téléphone, avec recherche, filtres, « Ma liste », un mode gestion et un aperçu des statistiques.
-- **Réalisations** (`/realisations`), **Méthode** (`/methode`, étapes et questions fréquentes) et **Contact** (`/contact`).
-- Défilement doux à la molette, titres qui montent mot à mot, boutons « magnétiques », bandeau final qui accélère quand on défile. Tout se coupe si le visiteur a demandé à réduire les animations.
+- **Menus imprimés** (`/menus`) : vos cartes papier. La carte d'Aux Saveurs Braisées se déplie à la molette (fermée, premier volet, grande ouverte, puis retournée pour montrer le dos), et une galerie présente les trois créations (Aux Saveurs Braisées, La Fleur d'Or style bistrot et style ardoise) : chaque feuille se retourne (extérieur / intérieur) et s'agrandit dans une visionneuse pour lire chaque ligne. Un aperçu en éventail renvoie vers cette page depuis l'accueil et les réalisations.
+- **Réalisations** (`/realisations`), **Méthode** (`/methode`, étapes et questions fréquentes) et **Contact** (`/contact`, avec l'option « Carte imprimée »).
+- Défilement doux à la molette, titres qui montent mot à mot, boutons « magnétiques », bandeau final qui accélère quand on défile. Si l'appareil demande moins d'animations (réglage de Windows, macOS, iOS ou Android), le site passe en mode doux : les scènes pilotées par la molette restent, les effets décoratifs s'arrêtent. Un lien en pied de page permet au visiteur de tout réactiver.
 
 **Les cookies et les statistiques**
 - Bandeau « Un petit cookie ? » avec Accepter et Refuser à égalité, choix gardé 6 mois, bouton « Gérer les cookies » en pied de page.
@@ -102,6 +103,8 @@ Ne lancez jamais ce script en ligne. Pour repartir de zéro, supprimez `www/data
 | Nom de la marque, email, mentions légales | `www/config.php` |
 | Formules, démo, réalisations, étapes, FAQ, tableau comparatif | `www/includes/content.php` |
 | Scènes animées de l'accueil | `www/index.php` et `www/assets/js/home.js` |
+| Menus imprimés (textes, galerie) | `print_menus()` dans `www/includes/content.php`, images dans `www/assets/img/menus/` |
+| Dépliant qui s'ouvre au défilement | `www/includes/sections/depliant.php` et `www/assets/js/menus.js` |
 | Téléphone, email affiché, zone, tarifs | Espace gestion > Réglages |
 | Couleurs, typographie, mise en page | `www/assets/css/site.css` |
 | Image de partage (réseaux sociaux) | `www/assets/img/og.jpg` (1200 × 630, contient le logo « miam ») |
@@ -120,7 +123,7 @@ Le nom « Miam » est une proposition : changez `site_name` dans `config.php`, l
 ```
 www/
   index.php                       accueil (scènes au défilement)
-  formules.php, demo.php, realisations.php, methode.php, contact.php
+  formules.php, demo.php, realisations.php, menus.php, methode.php, contact.php
   legal.php, 404.php              mentions, confidentialité, page introuvable
   admin/index.php                 espace gestion
   api/contact.php, api/track.php  formulaire et mesure d'audience

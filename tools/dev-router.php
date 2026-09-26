@@ -28,6 +28,7 @@ $routes = [
     '/formules' => ['formules.php', []],
     '/demo' => ['demo.php', []],
     '/realisations' => ['realisations.php', []],
+    '/menus' => ['menus.php', []],
     '/methode' => ['methode.php', []],
     '/contact' => ['contact.php', []],
     '/mentions-legales' => ['legal.php', ['page' => 'mentions']],

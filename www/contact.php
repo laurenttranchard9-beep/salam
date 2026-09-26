@@ -8,6 +8,8 @@ $sent = ($_GET['envoi'] ?? '') === 'ok';
 $formError = (string) ($_GET['erreur'] ?? '');
 // Formule présélectionnée depuis la page Formules (?formule=gestion)
 $chosenOffer = isset($offers[$_GET['formule'] ?? '']) ? (string) $_GET['formule'] : 'indecis';
+// Option cochée d'avance depuis la page Menus imprimés (?option=imprime)
+$chosenOptions = array_intersect(array_keys(contact_options()), [(string) ($_GET['option'] ?? '')]);
 
 $page = [
     'title' => 'Contact · ' . site_name(),

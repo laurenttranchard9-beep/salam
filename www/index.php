@@ -91,7 +91,7 @@ $qrCells = ['1111111010111', '1000001001001', '1011101011101', '1011101000101', 
   <div class="ribbons" aria-hidden="true">
     <?php
     $ribbonA = ['Pizzeria', 'Brasserie', 'Sushi', 'Crêperie', 'Food truck', 'Burger', 'Bistrot', 'Boulangerie', 'Tapas', 'Traiteur'];
-    $ribbonB = ['Carte en ligne', 'QR code', 'Espace gestion', 'Statistiques', 'Recherche de plat', 'Ma liste', 'Horaires en direct'];
+    $ribbonB = ['Carte en ligne', 'QR code', 'Espace gestion', 'Statistiques', 'Recherche de plat', 'Carte imprimée', 'Ma liste', 'Horaires en direct'];
     foreach (['a' => $ribbonA, 'b' => $ribbonB] as $name => $words): ?>
       <div class="ribbon ribbon--<?= $name ?>">
         <div class="ribbon__track" data-ribbon="<?= $name ?>">
@@ -206,6 +206,9 @@ $qrCells = ['1111111010111', '1000001001001', '1011101011101', '1011101000101', 
       </div>
     </div>
   </section>
+
+  <!-- 7. Les menus imprimés, en éventail -->
+  <?php section('imprimes-apercu', ['teaserLabel' => 'accueil']); ?>
 
   <?php require __DIR__ . '/includes/partials/cta-band.php'; ?>
 </main>

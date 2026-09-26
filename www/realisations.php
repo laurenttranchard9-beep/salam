@@ -25,6 +25,7 @@ $hero = [
 <main id="contenu">
   <?php require __DIR__ . '/includes/partials/page-hero.php'; ?>
   <?php section('realisations'); ?>
+  <?php section('imprimes-apercu', ['teaserLabel' => 'realisations']); ?>
   <?php require __DIR__ . '/includes/partials/cta-band.php'; ?>
 </main>
 <?php require __DIR__ . '/includes/partials/footer.php'; ?>

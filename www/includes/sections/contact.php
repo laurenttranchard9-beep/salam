@@ -109,7 +109,7 @@
           <legend>Options <span class="field__hint">facultatif</span></legend>
           <div class="chips">
             <?php foreach (contact_options() as $key => $label): ?>
-              <label class="chip chip--check"><input type="checkbox" name="options[]" value="<?= h($key) ?>"><span><?= h($label) ?></span></label>
+              <label class="chip chip--check"><input type="checkbox" name="options[]" value="<?= h($key) ?>"<?= in_array($key, $chosenOptions ?? [], true) ? ' checked' : '' ?>><span><?= h($label) ?></span></label>
             <?php endforeach; ?>
           </div>
         </fieldset>

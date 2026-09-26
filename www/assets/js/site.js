@@ -59,6 +59,7 @@
     dialog.classList.add('is-closing');
     dialog.addEventListener('animationend', finish, { once: true });
   }
+  window.miamDialog = { open: openDialog, close: closeDialog }; // utilisé par les scripts propres à une page
   document.querySelectorAll('dialog').forEach((dialog) => {
     dialog.addEventListener('cancel', (e) => { e.preventDefault(); closeDialog(dialog); });
     dialog.addEventListener('click', (e) => { if (e.target === dialog) closeDialog(dialog); });

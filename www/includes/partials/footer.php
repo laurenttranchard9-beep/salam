@@ -11,6 +11,7 @@
       <a href="<?= h(url('formules')) ?>">Formules</a>
       <a href="<?= h(url('demo')) ?>">La démo</a>
       <a href="<?= h(url('realisations')) ?>">Réalisations</a>
+      <a href="<?= h(url('menus')) ?>">Menus imprimés</a>
       <a href="<?= h(url('methode')) ?>">Méthode</a>
       <a href="<?= h(url('contact')) ?>">Contact</a>
     </nav>
