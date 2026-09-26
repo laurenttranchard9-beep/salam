@@ -45,7 +45,7 @@
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 5.5rem; }
 html.has-dialog { overflow: hidden; }
-@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background: var(--cream);
@@ -1192,10 +1192,6 @@ html:not(.has-scroll-scenes) .lineup__hint { display: none; }
 @media (max-width: 760px) {
   .hero-phone--left .hero-phone__intro, .hero-phone--right .hero-phone__intro { animation-name: phone-in-up; }
 }
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
-  .stack__card { position: static; }
-}
 
 /* ---------- Tablette ---------- */
 @media (max-width: 1180px) {
@@ -1267,12 +1263,30 @@ html:not(.has-scroll-scenes) .lineup__hint { display: none; }
   .flavor { padding: 0 .9rem 0 .7rem; }
 }
 
-/* ---------- Mouvement réduit ---------- */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
-  .js [data-reveal] { opacity: 1; --reveal: 0px; }
-  .phone__screen--scroll .phone__view img { animation: none; }
-}
+/* ---------- Mode doux (appareil réglé sur « moins d'animations », ou choix du visiteur) ----------
+   On garde des fondus et les scènes pilotées par la molette, on coupe ce qui bouge tout seul. */
+html.calm { scroll-behavior: auto; }
+html.calm .hero-phone__float, html.calm .ribbon__track, html.calm .phero__row, html.calm .sheet__row,
+html.calm .demo__row, html.calm .logo__spark, html.calm .cookie__art, html.calm .scroll-phone__halo,
+html.calm .scroll-cue__mouse i, html.calm .lineup__hint svg, html.calm .cta-band__track,
+html.calm .live__dot, html.calm .phone__screen--scroll .phone__view img { animation: none !important; }
+html.calm .sticker--qr { animation: calm-fade .6s ease-out 1s both !important; }
+html.calm .w > span, html.calm .hero-phone__intro, html.calm .hero__kicker, html.calm .hero__lead,
+html.calm .hero__actions, html.calm .ribbons .ribbon, html.calm .phero__kicker, html.calm .phero__lead,
+html.calm .topnav, html.calm .scroll-cue, html.calm .menu[open] .menu__nav li, html.calm .demo__list li,
+html.calm .cookie, html.calm .thanks__art, html.calm .dish.is-flash, html.calm .mini-bars span,
+html.calm .top-list i b { animation-name: calm-fade !important; animation-duration: .7s !important; }
+html.calm .menu[open], html.calm .sheet[open] { animation: calm-fade .3s ease-out; }
+html.calm .menu.is-closing, html.calm .sheet.is-closing, html.calm .cookie.is-leaving { animation: calm-fade-out .25s ease-out forwards; }
+html.calm.js [data-reveal] { --reveal: 0px; }
+html.calm::view-transition-old(root) { animation: calm-fade-out .25s ease-out both; }
+html.calm::view-transition-new(root) { animation: calm-fade .35s ease-out both; }
+@keyframes calm-fade { from { opacity: 0; } }
+@keyframes calm-fade-out { to { opacity: 0; } }
+
+/* ---------- Choix des animations (pied de page) ---------- */
+.motion-pref { display: inline-flex; align-items: center; gap: .5rem; }
+.motion-pref__state { color: rgba(255, 246, 234, .72); }
 
 @media print {
   .topbar, .cookie, .ribbons, .demo, .menu { display: none !important; }

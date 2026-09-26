@@ -4,7 +4,7 @@
 
   const root = document.documentElement;
   root.classList.add('js');
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = root.classList.contains('calm'); // posé par prefs.js
   const track = (name, label = '') => window.miamTrack?.(name, label);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');

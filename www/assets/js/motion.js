@@ -7,7 +7,8 @@
 (() => {
   'use strict';
 
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const root = document.documentElement;
+  const reduce = root.classList.contains('calm'); // mode doux, décidé par prefs.js
   const finePointer = matchMedia('(pointer: fine)').matches;
 
   /* ---------- Défilement doux ---------- */
@@ -87,6 +88,27 @@
       el.addEventListener('pointerleave', () => { el.style.translate = ''; });
     });
   }
+
+  /* ---------- Choix du visiteur : animations complètes ou douces ---------- */
+  document.querySelectorAll('[data-motion-pref]').forEach((box) => {
+    const state = box.querySelector('[data-motion-state]');
+    const button = box.querySelector('[data-motion-toggle]');
+    const osReduce = root.classList.contains('os-reduce');
+    state.textContent = reduce
+      ? (osReduce ? 'Animations réduites (réglage de votre appareil)' : 'Animations réduites')
+      : 'Animations activées';
+    button.textContent = reduce ? 'Tout activer' : 'Réduire';
+    button.addEventListener('click', () => {
+      try {
+        // Retour au réglage de l'appareil quand il correspond au choix, sinon on mémorise le choix
+        const wanted = reduce ? 'full' : 'calm';
+        if ((wanted === 'calm') === osReduce) localStorage.removeItem('miam_motion');
+        else localStorage.setItem('miam_motion', wanted);
+      } catch { /* stockage indisponible : le choix ne sera pas mémorisé */ }
+      location.reload();
+    });
+    box.hidden = false;
+  });
 
   /* ---------- En-tête des pages : le titre s'éloigne doucement au défilement ---------- */
   const hero = document.querySelector('[data-page-hero]');

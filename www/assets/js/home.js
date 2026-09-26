@@ -2,13 +2,16 @@
  * Accueil : les scènes pilotées par la molette.
  * 1. le hero s'écarte, 2. la carte défile dans le téléphone, 3. le texte se révèle mot à mot,
  * 4. la gamme passe à l'horizontale, 5. les étapes s'empilent, 6. les réalisations en parallaxe.
- * Sans GSAP ou avec « mouvement réduit », la page reste complète et lisible, sans scène.
+ * En mode doux (appareil réglé sur « moins d'animations »), seules les scènes que la molette
+ * pilote directement sont gardées (2, 3, 4) ; les effets décoratifs sont coupés.
+ * Sans GSAP, la page reste complète et lisible, sans scène.
  */
 (() => {
   'use strict';
 
   const { gsap, ScrollTrigger } = window;
-  if (!gsap || !ScrollTrigger || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!gsap || !ScrollTrigger) return;
+  const calm = document.documentElement.classList.contains('calm');
 
   gsap.registerPlugin(ScrollTrigger);
   ScrollTrigger.config({ ignoreMobileResize: true });
@@ -18,7 +21,7 @@
 
   /* ---------- 1. Le hero : les téléphones s'écartent, le titre s'envole ---------- */
   const hero = document.querySelector('[data-hero]');
-  if (hero) {
+  if (hero && !calm) {
     mm.add({ wide: '(min-width: 761px)', narrow: '(max-width: 760px)' }, (context) => {
       const { wide } = context.conditions;
       const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.7 } });
@@ -68,9 +71,11 @@
       },
     });
     tl.fromTo(shot, { y: 0 }, { y: () => -Math.max(0, shot.offsetHeight - view.clientHeight), duration: 1 }, 0)
-      .fromTo(meter, { scaleX: 0 }, { scaleX: 1, duration: 1 }, 0)
-      .fromTo('.phone--scroll', { rotation: -6, scale: 0.92 }, { rotation: 0, scale: 1, duration: 0.18, ease: 'power2.out' }, 0)
-      .to('.phone--scroll', { rotation: 3, scale: 0.96, duration: 0.12, ease: 'power1.in' }, 0.88);
+      .fromTo(meter, { scaleX: 0 }, { scaleX: 1, duration: 1 }, 0);
+    if (!calm) {
+      tl.fromTo('.phone--scroll', { rotation: -6, scale: 0.92 }, { rotation: 0, scale: 1, duration: 0.18, ease: 'power2.out' }, 0)
+        .to('.phone--scroll', { rotation: 3, scale: 0.96, duration: 0.12, ease: 'power1.in' }, 0.88);
+    }
   }
 
   /* ---------- 3. Le manifeste, mot à mot ---------- */
@@ -136,6 +141,7 @@
     });
 
     // Chaque carte se redresse en entrant dans l'écran
+    if (!calm) {
     const tilt = window.innerWidth < 760 ? 3 : 7;
     cards.forEach((card, i) => {
       gsap.fromTo(card, { rotation: i % 2 ? -tilt : tilt, yPercent: tilt * 1.4 }, {
@@ -143,10 +149,11 @@
         scrollTrigger: { trigger: card, containerAnimation: move, start: 'left 95%', end: 'left 45%', scrub: true },
       });
     });
+    }
   }
 
   /* ---------- 5. Les étapes qui s'empilent ---------- */
-  const stackCards = gsap.utils.toArray('[data-stack-card]');
+  const stackCards = calm ? [] : gsap.utils.toArray('[data-stack-card]');
   stackCards.forEach((card, i) => {
     const next = stackCards[i + 1];
     if (!next) return;
@@ -159,7 +166,7 @@
   });
 
   /* ---------- 6. Les réalisations, en parallaxe ---------- */
-  gsap.utils.toArray('[data-parallax]').forEach((img) => {
+  (calm ? [] : gsap.utils.toArray('[data-parallax]')).forEach((img) => {
     gsap.fromTo(img, { yPercent: -6 }, {
       yPercent: 6,
       ease: 'none',

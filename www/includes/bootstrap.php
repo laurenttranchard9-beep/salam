@@ -5,6 +5,9 @@
  * serveur (ou XAMPP) n'a pas ce qu'il faut, au lieu d'une page blanche.
  */
 
+// Jamais de message technique affiché aux visiteurs (XAMPP les affiche par défaut)
+ini_set('display_errors', '0');
+
 $problems = array();
 if (PHP_VERSION_ID < 80100) {
     $problems[] = 'Ce site demande PHP 8.1 ou plus. Version installée : ' . PHP_VERSION . '. Avec XAMPP, installez une version récente (PHP 8.1, 8.2 ou plus).';

@@ -126,7 +126,7 @@
   }
   function hideBanner() {
     if (!banner || banner.hidden) return;
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { banner.hidden = true; return; }
+    if (document.documentElement.classList.contains('calm')) { banner.hidden = true; return; }
     banner.classList.add('is-leaving');
     banner.addEventListener('animationend', () => { banner.hidden = true; banner.classList.remove('is-leaving'); }, { once: true });
   }

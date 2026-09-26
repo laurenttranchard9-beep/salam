@@ -21,6 +21,7 @@
         <a href="<?= h(url('confidentialite')) ?>">Confidentialité</a>
         <button type="button" class="linklike" data-cookie-manage>Gérer les cookies</button>
         <a href="<?= h(url('admin/')) ?>" rel="nofollow">Espace gestion</a>
+        <span class="motion-pref" data-motion-pref hidden><span class="motion-pref__state" data-motion-state></span><button type="button" class="linklike" data-motion-toggle></button></span>
       </nav>
     </div>
   </div>
