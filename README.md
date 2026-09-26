@@ -69,8 +69,10 @@ Bon à savoir :
 Connectez-vous au serveur en SSH, puis collez :
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/laurenttranchard9-beep/salam/claude/nice-maxwell-kmxeg2/install.sh | sudo bash -s -- votre-domaine.fr
+curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- votre-domaine.fr
 ```
+
+(le lien court mène à [install.sh](https://raw.githubusercontent.com/laurenttranchard9-beep/salam/claude/nice-maxwell-kmxeg2/install.sh), dans ce dépôt)
 
 Sans nom de domaine (`… | sudo bash`), le site reçoit une adresse automatique du type `http://miam.12-34-56-78.sslip.io`, pratique pour le montrer tout de suite.
 

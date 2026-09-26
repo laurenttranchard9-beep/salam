@@ -8,12 +8,13 @@
 #    - vos autres sites sont testés avant et après : si l'un d'eux répond
 #      différemment, tout est annulé automatiquement.
 #
-#  Installer          curl -fsSL <lien> | sudo bash -s -- mondomaine.fr
-#  Sans domaine       curl -fsSL <lien> | sudo bash
+#  Installer          curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- mondomaine.fr
+#                     (le lien court mène à ce fichier, sur GitHub)
+#  Sans domaine       curl -fsSL https://tinyurl.com/miam-install | sudo bash
 #                     (adresse automatique du type http://miam.12-34-56-78.sslip.io)
 #  Mettre à jour      la même commande : messages, statistiques, compte et
 #                     config.php sont gardés
-#  Désinstaller       curl -fsSL <lien> | sudo bash -s -- --desinstaller
+#  Désinstaller       curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- --desinstaller
 #
 #  Options : --sans-https, --email=vous@exemple.fr (pour Let's Encrypt)
 #  Variables : MIAM_DIR (dossier du site, /var/www/miam par défaut),
@@ -40,10 +41,10 @@ die()  { printf '\n%s✗ %s%s\n' "$R" "$*" "$N" >&2; exit 1; }
 
 usage() {
   cat <<'EOF'
-Installer          curl -fsSL <lien> | sudo bash -s -- mondomaine.fr
-Sans domaine       curl -fsSL <lien> | sudo bash
+Installer          curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- mondomaine.fr
+Sans domaine       curl -fsSL https://tinyurl.com/miam-install | sudo bash
 Mettre à jour      la même commande
-Désinstaller       curl -fsSL <lien> | sudo bash -s -- --desinstaller
+Désinstaller       curl -fsSL https://tinyurl.com/miam-install | sudo bash -s -- --desinstaller
 Options            --sans-https   --email=vous@exemple.fr
 Dossier du site    MIAM_DIR (par défaut /var/www/miam)
 EOF
@@ -299,7 +300,7 @@ save_file() { # garde une copie avant modification
 
 # ---------- Étapes ----------
 check_system() {
-  [ "$(id -u)" -eq 0 ] || die "Lancez la commande avec sudo :  curl -fsSL … | sudo bash"
+  [ "$(id -u)" -eq 0 ] || die "Lancez la commande avec sudo :  curl -fsSL https://tinyurl.com/miam-install | sudo bash"
   : >>"$LOG"
   local os_id os_name
   # shellcheck disable=SC1091
@@ -423,7 +424,7 @@ deploy_files() {
   if [ -d "$APP_DIR" ] && [ -n "$(ls -A "$APP_DIR" 2>/dev/null)" ]; then
     if [ ! -f "$APP_DIR/includes/core.php" ]; then
       rm -rf "$new"
-      die "$APP_DIR existe déjà et contient autre chose : je n'y touche pas. Choisissez un autre dossier, par ex. :  curl … | sudo MIAM_DIR=/var/www/miam2 bash"
+      die "$APP_DIR existe déjà et contient autre chose : je n'y touche pas. Choisissez un autre dossier, par ex. :  curl -fsSL https://tinyurl.com/miam-install | sudo MIAM_DIR=/var/www/miam2 bash"
     fi
     UPDATE=1
     mkdir -p "$BACKUP_DIR"; chmod 700 "$BACKUP_DIR"
