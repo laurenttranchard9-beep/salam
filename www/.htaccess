@@ -1,0 +1,75 @@
+# Configuration Apache du site (Apache 2.4, PHP 8.1 ou plus)
+
+DirectoryIndex index.php
+AddDefaultCharset UTF-8
+Options -Indexes
+
+# --- Fichiers qui ne doivent jamais être servis --------------------------------
+<IfModule mod_authz_core.c>
+    <FilesMatch "^(config\.php|.*\.(sqlite|sqlite3|db|log|md|sh|ini|lock|dist|bak|example))$">
+        Require all denied
+    </FilesMatch>
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+# --- Adresses propres ----------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Passer en HTTPS : décommentez ces deux lignes une fois le certificat installé.
+    # RewriteCond %{HTTPS} !=on
+    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Dossiers internes : jamais accessibles depuis le web
+    RewriteRule ^(includes|data)(/|$) - [F,L]
+
+    RewriteRule ^mentions-legales/?$ legal.php?page=mentions [L,QSA]
+    RewriteRule ^confidentialite/?$ legal.php?page=confidentialite [L,QSA]
+    RewriteRule ^robots\.txt$ robots.php [L]
+    RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
+    # Tout le reste qui n'existe pas : page 404 du site
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ 404.php [L]
+</IfModule>
+
+# --- En-têtes de sécurité (la politique CSP est envoyée par PHP) ---------------
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    # Une fois le site en HTTPS, vous pouvez activer HSTS :
+    # Header always set Strict-Transport-Security "max-age=31536000"
+</IfModule>
+
+# --- Cache des fichiers statiques (les URL changent à chaque mise à jour) ------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+<IfModule mod_mime.c>
+    AddType font/woff2 .woff2
+    AddType image/webp .webp
+    AddType image/svg+xml .svg
+    AddType application/manifest+json .webmanifest
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript text/javascript application/json image/svg+xml application/xml
+</IfModule>
+
+# PHP : ne pas exposer la version (si l'hébergeur l'autorise)
+<IfModule mod_php.c>
+    php_flag expose_php Off
+</IfModule>

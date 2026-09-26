@@ -1,0 +1,3 @@
+# Données du site (base SQLite, sessions) : jamais dans le dépôt
+www/data/*
+!www/data/.htaccess
