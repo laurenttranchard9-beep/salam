@@ -1,3 +1,6 @@
 # Données du site (base SQLite, sessions) : jamais dans le dépôt
 www/data/*
 !www/data/.htaccess
+
+# Cache Python (tools/make-logo.py)
+__pycache__/
