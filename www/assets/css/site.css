@@ -803,6 +803,13 @@ svg use { pointer-events: none; }
   -webkit-background-clip: text; background-clip: text; color: transparent;
   user-select: none;
 }
+/* La mention du logo, calée sur la largeur du mot (même rapport que dans logo/) */
+.footer__tagline {
+  margin: calc(clamp(6rem, 28vw, 25rem) * .07 - 1rem) auto clamp(2.5rem, 5vw, 4rem); padding-left: .12em;
+  max-width: 100%; text-align: center; text-wrap: balance;
+  font: 500 clamp(.6875rem, 1.58vw, 1.41rem)/1.5 var(--ui); text-transform: uppercase; letter-spacing: .12em;
+  color: var(--cream);
+}
 .footer__bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 246, 234, .14); font-size: .875rem; color: rgba(255, 246, 234, .72); }
 .footer__bottom nav { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; }
 .footer__bottom a, .footer__bottom button { color: rgba(255, 246, 234, .85); text-decoration: none; }

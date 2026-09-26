@@ -6,6 +6,7 @@
       <a class="pill pill--white" href="<?= h(url('contact')) ?>" data-magnetic data-track="cta" data-label="footer-devis">Demander un devis <svg aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
     </div>
     <p class="footer__word" aria-hidden="true" data-footer-word><?= h(mb_strtolower(site_name())) ?></p>
+    <p class="footer__tagline"><?= h((string) config('tagline')) ?></p>
     <nav class="footer__pages" aria-label="Pages du site">
       <a href="<?= h(url('')) ?>">Accueil</a>
       <a href="<?= h(url('formules')) ?>">Formules</a>

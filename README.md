@@ -27,6 +27,21 @@ Le dossier à mettre en ligne est **`www/`**. Le dossier `site/` contient une an
 - Email envoyé à chaque nouvelle demande (fonction `mail()` de PHP).
 - Mode sombre automatique, utilisable sur téléphone.
 
+## Le logo
+
+Le dossier `logo/` contient le logo « miam » (le mot en dégradé du pied de page) avec la mention « Créateur de site internet, menu et motion design ». Tout le dossier est aussi disponible en un seul fichier : [miam-logo.zip](https://github.com/laurenttranchard9-beep/salam/raw/claude/nice-maxwell-kmxeg2/miam-logo.zip).
+
+| Fichier | Pour quoi faire |
+|---|---|
+| `miam-logo-fond-sombre.png` / `.svg` | Version principale, sur fond chocolat (3000 px de large) |
+| `miam-logo-fond-clair.png` / `.svg` | Sur fond crème : documents, devis, factures |
+| `miam-logo-transparent-texte-clair.png` / `.svg` | Fond transparent, à poser sur une photo ou un fond foncé |
+| `miam-logo-transparent-texte-fonce.png` / `.svg` | Fond transparent, à poser sur un fond clair |
+| `miam-logo-carre.png` / `.svg` | Photo de profil (Instagram, Facebook, Google), 2160 × 2160 |
+| `miam-logo-anime.gif` / `.svg` | La version animée (motion design) : les lettres montent une à une, puis la mention apparaît |
+
+Les SVG sont vectoriels (lettres converties en tracés) : ils s'agrandissent sans perte et s'ouvrent sans les polices, pour un imprimeur, une enseigne ou un flocage. Pour les refaire (autre mention, autres couleurs) : modifiez `TAGLINE` ou les couleurs en haut de `tools/make-logo.py`, puis lancez `python3 tools/make-logo.py` (demande `pip install fonttools uharfbuzz brotli`). La mention du pied de page du site se change dans `www/config.php` (`tagline`).
+
 ## Prérequis
 
 - Apache 2.4 avec `mod_rewrite` (et si possible `mod_headers`, `mod_expires`, `mod_deflate`), `AllowOverride All`.

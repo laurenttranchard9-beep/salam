@@ -9,7 +9,8 @@
 return [
     // Nom de la marque, affiché dans le logo, les titres et les emails.
     'site_name' => 'Miam',
-    'tagline'   => 'Des cartes en ligne qui donnent faim',
+    // Mention du logo, sous le grand « miam » du pied de page.
+    'tagline'   => 'Créateur de site internet, menu et motion design',
 
     // Vous, le créateur des sites.
     'owner_name' => 'Laurent Tranchard',
