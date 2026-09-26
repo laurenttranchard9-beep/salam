@@ -68,8 +68,3 @@ Options -Indexes
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript text/javascript application/json image/svg+xml application/xml
 </IfModule>
-
-# PHP : ne pas exposer la version (si l'hébergeur l'autorise)
-<IfModule mod_php.c>
-    php_flag expose_php Off
-</IfModule>

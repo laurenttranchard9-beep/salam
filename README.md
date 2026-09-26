@@ -35,6 +35,19 @@ Le dossier à mettre en ligne est **`www/`**. Le dossier `site/` contient une an
 
 **[miam-site-apache.zip](https://github.com/laurenttranchard9-beep/salam/raw/claude/nice-maxwell-kmxeg2/miam-site-apache.zip)** contient le dossier `www/` prêt à déposer : décompressez-le directement à la racine de votre site. Si vous modifiez `www/`, refaites l'archive avec `git archive --format=zip -o miam-site-apache.zip HEAD:www`.
 
+## Avec XAMPP (sur votre ordinateur)
+
+1. Ouvrez le panneau XAMPP et démarrez **Apache** (MySQL n'est pas utile).
+2. Décompressez `miam-site-apache.zip` dans `C:\xampp\htdocs\miam`. Vérifiez que le fichier `C:\xampp\htdocs\miam\index.php` existe (pas de dossier en trop entre les deux).
+3. Ouvrez http://localhost/miam/ pour le site et http://localhost/miam/admin/ pour créer votre compte.
+
+Bon à savoir :
+- Si une page « Il manque quelque chose sur le serveur » s'affiche, elle dit quelle ligne activer dans `C:\xampp\php\php.ini`. Redémarrez Apache après la modification.
+- Si Apache tourne sur un autre port (par exemple 8080), l'adresse devient http://localhost:8080/miam/.
+- XAMPP n'envoie pas d'emails : c'est normal, les messages du formulaire restent visibles dans l'espace gestion.
+- Sur Mac ou Linux, rendez le dossier `data` inscriptible : `chmod 777 /Applications/XAMPP/htdocs/miam/data`.
+- XAMPP sert à tester sur votre ordinateur : pour que vos clients voient le site, il faut le déposer chez un hébergeur (étapes ci-dessous).
+
 ## Mise en ligne sur un hébergement mutualisé
 
 1. Ouvrez `www/config.php` et vérifiez : le nom de la marque, votre nom, l'email qui reçoit les notifications, et **les mentions légales** (SIRET, adresse, hébergeur). Les champs vides s'affichent « à compléter » sur le site.
