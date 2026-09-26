@@ -31,6 +31,10 @@ Le dossier à mettre en ligne est **`www/`**. Le dossier `site/` contient une an
 - Apache 2.4 avec `mod_rewrite` (et si possible `mod_headers`, `mod_expires`, `mod_deflate`), `AllowOverride All`.
 - PHP 8.1 ou plus avec l'extension PDO SQLite, activée chez la plupart des hébergeurs (la page Réglages > État du site vérifie tout ça pour vous).
 
+## Télécharger
+
+**[miam-site-apache.zip](https://github.com/laurenttranchard9-beep/salam/raw/claude/nice-maxwell-kmxeg2/miam-site-apache.zip)** contient le dossier `www/` prêt à déposer : décompressez-le directement à la racine de votre site. Si vous modifiez `www/`, refaites l'archive avec `git archive --format=zip -o miam-site-apache.zip HEAD:www`.
+
 ## Mise en ligne sur un hébergement mutualisé
 
 1. Ouvrez `www/config.php` et vérifiez : le nom de la marque, votre nom, l'email qui reçoit les notifications, et **les mentions légales** (SIRET, adresse, hébergeur). Les champs vides s'affichent « à compléter » sur le site.
