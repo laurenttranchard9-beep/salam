@@ -64,6 +64,26 @@ Bon à savoir :
 - Sur Mac ou Linux, rendez le dossier `data` inscriptible : `chmod 777 /Applications/XAMPP/htdocs/miam/data`.
 - XAMPP sert à tester sur votre ordinateur : pour que vos clients voient le site, il faut le déposer chez un hébergeur (étapes ci-dessous).
 
+## Sur un serveur Amazon Linux (AWS), en une commande
+
+Connectez-vous au serveur en SSH, puis collez :
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/laurenttranchard9-beep/salam/claude/nice-maxwell-kmxeg2/install.sh | sudo bash -s -- votre-domaine.fr
+```
+
+Sans nom de domaine (`… | sudo bash`), le site reçoit une adresse automatique du type `http://miam.12-34-56-78.sslip.io`, pratique pour le montrer tout de suite.
+
+Ce que fait la commande (`install.sh`, à lire avant si vous voulez) :
+- repère Apache ou Nginx et PHP ; ajoute seulement ce qui manque (extensions `pdo` et `mbstring` de la même version de PHP), et refuse de changer la version de PHP de vos autres sites ;
+- installe le site dans `/var/www/miam` : le code appartient à root, seul `data/` est modifiable par PHP ;
+- vous demande un identifiant et un mot de passe pour l'espace gestion (ou en génère un s'il n'y a pas de clavier) : personne ne peut créer le compte à votre place depuis le web ;
+- ajoute un fichier de configuration à part (`zzz-miam.conf`), chargé en dernier pour ne jamais devenir le site par défaut ;
+- teste vos autres sites avant et après (code HTTP, redirection et titre de page) : si l'un d'eux répond différemment, tout est annulé ;
+- active le HTTPS avec certbot s'il est déjà installé et que le domaine pointe vers le serveur.
+
+Relancer la même commande **met à jour** le site (messages, statistiques, compte et `config.php` conservés, sauvegarde dans `/root/miam-sauvegardes`). Pour le retirer : `… | sudo bash -s -- --desinstaller`.
+
 ## Mise en ligne sur un hébergement mutualisé
 
 1. Ouvrez `www/config.php` et vérifiez : le nom de la marque, votre nom, l'email qui reçoit les notifications, et **les mentions légales** (SIRET, adresse, hébergeur). Les champs vides s'affichent « à compléter » sur le site.
@@ -136,11 +156,13 @@ Le nom « Miam » est une proposition : changez `site_name` dans `config.php`, l
 ## Arborescence
 
 ```
+install.sh                        installation en une commande sur Amazon Linux
 www/
   index.php                       accueil (scènes au défilement)
   formules.php, demo.php, realisations.php, menus.php, methode.php, contact.php
   legal.php, 404.php              mentions, confidentialité, page introuvable
   admin/index.php                 espace gestion
+  includes/cli/create-admin.php   création du compte en ligne de commande (install.sh)
   api/contact.php, api/track.php  formulaire et mesure d'audience
   includes/                       code PHP (bloqué par .htaccess)
   assets/                         CSS, JavaScript, polices, images
